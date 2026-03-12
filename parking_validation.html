@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Validation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%234f46e5;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23818cf8;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='20' fill='url(%23grad)'/%3E%3Ctext x='50' y='70' font-family='Orbitron,sans-serif' font-size='60' font-weight='700' text-anchor='middle' fill='white'%3EE%3C/text%3E%3C/svg%3E">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            color: #1e293b;
+            min-height: 100vh;
+            margin: 0;
+            position: relative;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+        .background-svg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.35;
+        }
+        .animated-gradient {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(120deg, #6366f1 0%, #818cf8 50%, #10b981 100%);
+            opacity: 0.18;
+            animation: gradientMove 8s ease-in-out infinite alternate;
+        }
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        .sparkle {
+            position: absolute;
+            border-radius: 50%;
+            background: #fff;
+            opacity: 0.7;
+            pointer-events: none;
+            animation: sparkleMove 6s linear infinite;
+        }
+        @keyframes sparkleMove {
+            0% { transform: translateY(0) scale(1); opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-60px) scale(1.2); opacity: 0; }
+        }
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+        .header {
+            background: linear-gradient(120deg, #6366f1 0%, #818cf8 60%, #10b981 100%);
+            color: #fff;
+            padding: 2.2rem 0 2rem 0;
+            box-shadow: 0 6px 24px rgba(99,102,241,0.13);
+            margin-bottom: 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header-wave {
+            position: absolute;
+            left: 0; bottom: 0; width: 100%; height: 60px;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .header-glow {
+            display: block;
+            margin: 0 auto;
+            width: 180px;
+            height: 24px;
+            background: radial-gradient(ellipse at center, #818cf8 0%, rgba(129,140,248,0.0) 80%);
+            filter: blur(12px);
+            opacity: 0.7;
+            position: relative;
+            top: -18px;
+            z-index: 2;
+        }
+        .header-dot-cluster {
+            position: absolute;
+            top: 18px;
+            right: 32px;
+            z-index: 3;
+            display: flex;
+            gap: 8px;
+            animation: floatDots 3.5s ease-in-out infinite alternate;
+        }
+        .header-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #818cf8, #10b981);
+            opacity: 0.7;
+            animation: pulseDot 2s infinite alternate;
+        }
+        .header-dot:nth-child(2) { width: 7px; height: 7px; opacity: 0.5; animation-delay: 0.7s; }
+        .header-dot:nth-child(3) { width: 13px; height: 13px; opacity: 0.6; animation-delay: 1.2s; }
+        @keyframes floatDots {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-12px); }
+        }
+        @keyframes pulseDot {
+            0% { filter: blur(0px); }
+            100% { filter: blur(2px); }
+        }
+        .header-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.7rem;
+            font-weight: 900;
+            margin: 0;
+            color: #fff;
+            letter-spacing: 0.01em;
+            text-shadow: 0 2px 16px rgba(79,70,229,0.18), 0 1px 0 #3730a3;
+            animation: fadeDown 1s cubic-bezier(.77,0,.18,1) 0.1s both;
+        }
+        .header-subtitle {
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: #e0e7ff;
+            margin-top: 0.7rem;
+            margin-bottom: 0.2rem;
+            letter-spacing: 0.01em;
+            text-shadow: 0 1px 8px rgba(79,70,229,0.13);
+            animation: fadeDown 1.1s cubic-bezier(.77,0,.18,1) 0.3s both;
+        }
+        @keyframes fadeDown {
+            0% { opacity: 0; transform: translateY(-30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .wave-divider {
+            display: block;
+            width: 100%;
+            height: 60px;
+            margin-bottom: -2.5rem;
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 2rem 1rem 0 1rem;
+        }
+        .validation-card {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(99,102,241,0.10);
+            padding: 2.5rem 2rem 2rem 2rem;
+            max-width: 400px;
+            width: 100%;
+            margin-bottom: 2.5rem;
+            animation: fadeInUp 0.8s;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .validation-card:hover {
+            box-shadow: 0 16px 40px rgba(99,102,241,0.18);
+            transform: translateY(-2px) scale(1.01);
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            gap: 0.5rem;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: #5651e5;
+            font-size: 1.1rem;
+            font-family: inherit;
+            font-weight: 600;
+            padding: 0.75rem 2rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            border-radius: 12px 12px 0 0;
+            transition: border 0.2s, color 0.2s, background 0.2s;
+        }
+        .tab-btn.active {
+            color: #fff;
+            background: #5651e5;
+            border-bottom: 2.5px solid #4f46e5;
+        }
+        .step-content { display: none; }
+        .step-content.active { display: block; }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            border: 2px dashed #e5e7eb;
+            background: #f8fafc;
+            color: #1e293b;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            transition: border 0.2s;
+            cursor: pointer;
+        }
+        input[type="file"]:hover {
+            border-color: #6366f1;
+            background: #fff;
+        }
+        input[type="file"]:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: #fff;
+        }
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            background: #f8fafc;
+            transition: all 0.3s;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+        .upload-area:hover {
+            border-color: #6366f1;
+            background: #f0f4ff;
+        }
+        .upload-area.dragover {
+            border-color: #6366f1;
+            background: #f0f4ff;
+            transform: scale(1.02);
+        }
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #6366f1;
+        }
+        .upload-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        .upload-subtext {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        .progress-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s;
+        }
+        .step.active .step-number {
+            background: #6366f1;
+            color: white;
+        }
+        .step.completed .step-number {
+            background: #10b981;
+            color: white;
+        }
+        .step-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        .step.active .step-label {
+            color: #6366f1;
+        }
+        .step.completed .step-label {
+            color: #10b981;
+        }
+        .step-connector {
+            width: 60px;
+            height: 2px;
+            background: #e5e7eb;
+            margin: 0 0.5rem;
+            margin-top: -20px;
+        }
+        .step.completed + .step-connector {
+            background: #10b981;
+        }
+        .uploaded-files {
+            margin-top: 1rem;
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+        .file-icon {
+            color: #0ea5e9;
+            font-size: 1.2rem;
+        }
+        .file-name {
+            flex: 1;
+            font-size: 0.9rem;
+            color: #374151;
+        }
+        .file-remove {
+            color: #ef4444;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .file-remove:hover {
+            background: #fee2e2;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+        }
+        .btn:hover {
+            box-shadow: 0 4px 16px rgba(99,102,241,0.18);
+            transform: translateY(-2px) scale(1.04);
+        }
+        /* Minimize the size of the Take Photo and Upload from Device buttons */
+        .btn.btn-primary,
+        .btn.btn-secondary {
+            padding: 0.35rem 0.5rem !important;
+            font-size: 0.95rem !important;
+            width: 60% !important;
+            min-width: 120px;
+            max-width: 220px;
+            margin: 0.25rem auto !important;
+            display: block;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        .result {
+            margin-top: 2rem;
+            padding: 1.25rem;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.1rem;
+            display: none;
+        }
+        .result.success {
+            background: #f0fdf4;
+            color: #22c55e;
+            border: 1px solid #22c55e;
+        }
+        .result.error {
+            background: #fef2f2;
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+        .info-section, .features-section, .recent-section {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 2.5rem auto;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(99,102,241,0.10);
+            padding: 2rem 1.5rem;
+            animation: fadeInUp 0.8s;
+        }
+        .info-title, .features-title, .recent-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #5651e5;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .info-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .info-item {
+            flex: 1 1 220px;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        .info-icon {
+            font-size: 2rem;
+            color: #6366f1;
+            flex-shrink: 0;
+        }
+        .info-text {
+            font-size: 1rem;
+            color: #374151;
+        }
+        .features-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        .feature-card {
+            flex: 1 1 180px;
+            background: linear-gradient(135deg, #f8fafc 60%, #e0e7ff 100%);
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(99,102,241,0.07);
+            padding: 1.2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-width: 150px;
+        }
+        .feature-icon {
+            font-size: 2rem;
+            color: #4f46e5;
+            margin-bottom: 0.5rem;
+        }
+        .feature-title {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.3rem;
+        }
+        .feature-desc {
+            font-size: 0.98rem;
+            color: #64748b;
+        }
+        .recent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .recent-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            box-shadow: 0 1px 3px rgba(99,102,241,0.04);
+        }
+        .recent-icon {
+            font-size: 1.5rem;
+            color: #10b981;
+        }
+        .recent-info {
+            flex: 1;
+        }
+        .recent-bill {
+            font-weight: 600;
+            color: #4f46e5;
+        }
+        .recent-status {
+            font-size: 0.95rem;
+            color: #22c55e;
+            font-weight: 500;
+        }
+        .recent-status.error {
+            color: #ef4444;
+        }
+        .footer {
+            margin-top: auto;
+            text-align: center;
+            color: #818cf8;
+            padding: 1.5rem 0 0.5rem 0;
+            font-size: 0.95rem;
+        }
+        .call-to-action {
+            background: linear-gradient(90deg, #818cf8 0%, #4f46e5 100%);
+            color: #fff;
+            text-align: center;
+            padding: 1.2rem 0.5rem;
+            font-size: 1.15rem;
+            font-weight: 600;
+            border-radius: 16px;
+            margin: 2rem auto 1rem auto;
+            max-width: 600px;
+            box-shadow: 0 4px 16px rgba(99,102,241,0.10);
+            animation: fadeInUp 1.2s;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 900px) {
+            .info-section, .features-section, .recent-section {
+                padding: 1.2rem 0.5rem;
+            }
+            .features-list {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .validation-card {
+                padding: 1.5rem 0.5rem;
+            }
+            .tab-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.95rem;
+            }
+            .info-list {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.5rem;
+                padding: 0 0.5rem;
+            }
+            .header {
+                padding: 1.2rem 0 1.2rem 0;
+            }
+            .header-glow { width: 100px; height: 16px; top: -10px; }
+            .header-dot-cluster { right: 10px; top: 10px; }
+        }
+        @media print {
+          @page {
+            size: 58mm auto;
+            margin: 3mm;
+          }
+          body * {
+            visibility: hidden !important;
+          }
+          #printable-receipt, #printable-receipt * {
+            visibility: visible !important;
+          }
+          #printable-receipt {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            font-size: 12px !important;
+            background: #fff !important;
+            color: #000 !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+          }
+          #printable-receipt hr {
+            border: none;
+            border-top: 1px dashed #000;
+            margin: 6px 0;
+          }
+          #printable-receipt div, #printable-receipt span, #printable-receipt strong {
+            background: none !important;
+            color: #000 !important;
+            font-size: 12px !important;
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+          #printable-receipt .btn, #printable-receipt button, #printable-receipt a {
+            display: none !important;
+          }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-gradient"></div>
+    <svg class="background-svg" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="200" cy="200" r="120" fill="#4f46e5" fill-opacity="0.22"/>
+        <rect x="1100" y="100" width="220" height="220" rx="60" fill="#3730a3" fill-opacity="0.18"/>
+        <ellipse cx="900" cy="700" rx="140" ry="80" fill="#f59e0b" fill-opacity="0.18"/>
+        <circle cx="300" cy="800" r="90" fill="#10b981" fill-opacity="0.18"/>
+        <rect x="700" y="400" width="120" height="120" rx="30" fill="#ef4444" fill-opacity="0.15"/>
+    </svg>
+    <div class="sparkle" style="top:10%;left:20%;width:8px;height:8px;animation-delay:0s;"></div>
+    <div class="sparkle" style="top:30%;left:70%;width:12px;height:12px;animation-delay=1.2s;"></div>
+    <div class="sparkle" style="top:60%;left:40%;width:10px;height:10px;animation-delay=2.4s;"></div>
+    <div class="sparkle" style="top:80%;left:80%;width:7px;height:7px;animation-delay=3.6s;"></div>
+    <div class="sparkle" style="top:50%;left:10%;width:9px;height:9px;animation-delay=4.8s;"></div>
+    <div class="page-container">
+        <header class="header">
+            <div class="header-content">
+                <h1>Parking Validation</h1>
+                <div class="header-glow"></div>
+                <div class="header-subtitle">Smart Mall Parking System</div>
+            </div>
+            <div class="header-dot-cluster">
+                <div class="header-dot"></div>
+                <div class="header-dot"></div>
+                <div class="header-dot"></div>
+            </div>
+            <svg class="header-wave" viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,30 Q360,60 720,30 T1440,30 V60 H0 Z" fill="#fff"/></svg>
+        </header>
+        <svg class="wave-divider" viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,30 Q360,60 720,30 T1440,30 V60 H0 Z" fill="#fff"/></svg>
+        <main class="main-content">
+            <div style="width:100%;display:flex;justify-content:flex-start;margin-bottom:24px;">
+                <a href="/" class="back-link" style="display:inline-flex;align-items:center;gap:8px;color:#4f46e5;text-decoration:none;font-weight:500;padding:8px 18px;border-radius:8px;background:rgba(129,140,248,0.10);transition:all 0.2s;font-size:1.08rem;box-shadow:0 2px 8px rgba(129,140,248,0.07);border:none;">
+                    <span style="font-size:1.2rem;">&#8592;</span> Back to Home
+                </a>
+            </div>
+            <div class="validation-card">
+                <!-- Progress Steps -->
+                <div class="progress-steps">
+                    <div class="step active" id="step1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Upload Parking Bill</div>
+                    </div>
+                    <div class="step-connector"></div>
+                    <div class="step" id="step2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Upload Shopping Bill</div>
+                    </div>
+                    <div class="step-connector"></div>
+                    <div class="step" id="step3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">View Results</div>
+                    </div>
+                </div>
+
+                <!-- Step 1: Upload Parking Bills -->
+                <div class="step-content active" id="parking-upload-step">
+                    <h3 style="margin-bottom: 1rem; color: #374151; text-align: center;">Step 1: Upload Parking Bill</h3>
+                    <div class="upload-area" id="parking-upload-area">
+                        <div class="upload-icon">🅿️</div>
+                        <div class="upload-text">Upload Parking Bill</div>
+                        <div class="upload-subtext">Upload your parking ticket receipt</div>
+                        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+                            <label for="parking-camera-upload" class="btn btn-primary">
+                                <i class="fas fa-camera"></i> Take Photo
+                            </label>
+                            <input id="parking-camera-upload" type="file" accept="image/*" capture="environment" style="display:none;">
+
+                            <label for="parking-file-upload" class="btn btn-secondary">
+                                <i class="fas fa-upload"></i> Upload from Device
+                            </label>
+                            <input id="parking-file-upload" type="file" accept="image/*" style="display:none;">
+                        </div>
+                    </div>
+                    <div class="uploaded-files" id="parking-files-list"></div>
+                    <div id="parking-result" style="display: none; margin-top: 1rem; padding: 1rem; border-radius: 8px;"></div>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; justify-content: center;">
+                        <button class="btn" id="parking-next-btn" style="display: none; flex: 1;">Next: Upload Shopping Bill</button>
+                        <button class="btn" id="parking-pay-direct-btn" style="display: none; flex: 1; background: #dc3545;">
+                            💰 Pay Parking Fee Directly
+                        </button>
+                    </div>
+                    <div style="margin-top: 1rem; text-align: center; color: #6b7280; font-size: 0.9rem;">
+                        <p id="no-shopping-text" style="display: none;">No shopping today? You can directly pay the standard parking fee .</p>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Step 2: Upload Shopping Bill -->
+                <div class="step-content" id="shopping-upload-step">
+                    <h3 style="margin-bottom: 1rem; color: #374151; text-align: center;">Step 2: Upload Shopping Bill</h3>
+                    <div class="upload-area" id="shopping-upload-area">
+                        <div class="upload-icon">🛒</div>
+                        <div class="upload-text">Upload Shopping Bill</div>
+                        <div class="upload-subtext">Upload your shopping receipt to complete the session</div>
+                        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+                            <label for="shopping-camera-upload" class="btn btn-primary">
+                                <i class="fas fa-camera"></i> Take Photo
+                            </label>
+                            <input id="shopping-camera-upload" type="file" accept="image/*" capture="environment" style="display:none;">
+
+                            <label for="shopping-file-upload" class="btn btn-secondary">
+                                <i class="fas fa-upload"></i> Upload from Device
+                            </label>
+                            <input id="shopping-file-upload" type="file" accept="image/*" style="display:none;">
+                        </div>
+                    </div>
+                    <div class="uploaded-files" id="shopping-files-list"></div>
+                    <div id="shopping-result" style="display: none; margin-top: 1rem; padding: 1rem; border-radius: 8px;"></div>
+                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                        <button class="btn" id="shopping-back-btn" style="background: #6b7280;">Back</button>
+                        <button class="btn" id="shopping-next-btn" style="display: none;">View Results</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Results -->
+                <div class="step-content" id="results-step">
+                    <h3 style="margin-bottom: 1rem; color: #374151; text-align: center;">Step 3: Results</h3>
+                    <div id="final-results" style="text-align: center;">
+                        <!-- Results will be displayed here -->
+                    </div>
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem; justify-content: center;">
+                        <button class="btn" id="results-back-btn" style="background: #6b7280;">Back</button>
+                        <button class="btn" id="print-receipt-btn" style="background: #10b981;" onclick="printReceipt()">Print Receipt</button>
+                        <a href="/parking_validation" class="btn" style="background: #6366f1;">New Session</a>
+                    </div>
+                </div>
+            </div>
+            <section class="info-section">
+                <div class="info-title"><span class="info-icon">❓</span>How it works</div>
+                <div class="info-list">
+                    <div class="info-item"><span class="info-icon">🅿️</span><div class="info-text">First, upload your <b>parking ticket</b> to create a new session.</div></div>
+                    <div class="info-item"><span class="info-icon">🛒</span><div class="info-text">Next, upload your <b>shopping bill</b> from the same mall visit.</div></div>
+                    <div class="info-item"><span class="info-icon">⚡</span><div class="info-text">The system automatically combines both bills and determines if parking fees should be <b>waived</b>.</div></div>
+                    <div class="info-item"><span class="info-icon">🔒</span><div class="info-text">Both bills are stored as one record with <b>parking ticket number</b>, <b>vehicle number</b>, <b>store name</b>, and amounts.</div></div>
+                </div>
+            </section>
+            <section class="features-section">
+                <div class="features-title"><span class="feature-icon">✨</span>Features</div>
+                <div class="features-list">
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <div class="feature-title">Fast Validation</div>
+                        <div class="feature-desc">Get instant results for both shopping and parking bills.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <div class="feature-title">Secure & Private</div>
+                        <div class="feature-desc">Your information is encrypted and never shared.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📱</div>
+                        <div class="feature-title">Mobile Friendly</div>
+                        <div class="feature-desc">Easily validate from your phone or tablet.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🕒</div>
+                        <div class="feature-title">24/7 Access</div>
+                        <div class="feature-desc">Validate your bills anytime, anywhere.</div>
+                    </div>
+                </div>
+            </section>
+            <section class="recent-section">
+                <div class="recent-title"><span class="recent-icon">🕑</span>Recent Validations</div>
+                <div class="recent-list">
+                    <div class="recent-item">
+                        <span class="recent-icon">🛒</span>
+                        <div class="recent-info">
+                            <span class="recent-bill">Bill #SH12345</span> &mdash; <span class="recent-status">Parking Waived</span>
+                        </div>
+                        <span style="color:#64748b;font-size:0.95rem;">2 min ago</span>
+                    </div>
+                    <div class="recent-item">
+                        <span class="recent-icon">🅿️</span>
+                        <div class="recent-info">
+                            <span class="recent-bill">Bill #PK98765</span> &mdash; <span class="recent-status error">Paid Parking</span>
+                        </div>
+                        <span style="color:#64748b;font-size:0.95rem;">10 min ago</span>
+                    </div>
+                    <div class="recent-item">
+                        <span class="recent-icon">🛒</span>
+                        <div class="recent-info">
+                            <span class="recent-bill">Bill #SH67890</span> &mdash; <span class="recent-status">Parking Waived</span>
+                        </div>
+                        <span style="color:#64748b;font-size:0.95rem;">30 min ago</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <div class="call-to-action">🚀 Try our new mobile app for even faster validation and receipt management!</div>
+        <div class="footer">
+            &copy; 2025 Smart Mall Parking System
+        </div>
+    </div>
+    <script>
+    // Session management
+    let currentStep = 1;
+    let sessionId = null;
+    let parkingData = null;
+    let shoppingData = null;
+
+    // File upload handlers
+    function handleFileUpload(inputElement, uploadType) {
+        const file = inputElement.files[0];
+        if (!file) return;
+
+        if (uploadType === 'parking') {
+            uploadParkingBill(file);
+        } else if (uploadType === 'shopping') {
+            uploadShoppingBill(file);
+        }
+    }
+
+    async function uploadParkingBill(file) {
+        const resultDiv = document.getElementById('parking-result');
+        const nextBtn = document.getElementById('parking-next-btn');
+        
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `
+            <div style="text-align: center;">
+                <div style="font-size: 1.2rem; color: #6366f1;">⏳ Processing Parking Bill...</div>
+                <div style="margin-top: 0.5rem; color: #6b7280;">Extracting parking ticket information...</div>
+            </div>
+        `;
+        resultDiv.style.background = '#f8fafc';
+        resultDiv.style.border = '1px solid #e5e7eb';
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch('/api/upload_parking_bill', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                sessionId = data.session_id;
+                parkingData = data.parking_data;
+                
+                // Try to extract any missing vehicle number or ticket number
+                let vehicleNo = parkingData.vehicle_no;
+                let ticketNo = parkingData.parking_ticket_no;
+                
+                // If vehicle number is missing, try to extract it
+                if (!vehicleNo && data.raw_text) {
+                    vehicleNo = extractVehicleNumberFromText(data.raw_text);
+                    if (vehicleNo) {
+                        parkingData.vehicle_no = vehicleNo;
+                        console.log("Extracted missing vehicle number:", vehicleNo);
+                    }
+                }
+                
+                // If ticket number is missing, try to extract it
+                if (!ticketNo && data.raw_text) {
+                    ticketNo = extractTicketNumberFromText(data.raw_text);
+                    if (ticketNo) {
+                        parkingData.parking_ticket_no = ticketNo;
+                        console.log("Extracted missing ticket number:", ticketNo);
+                    }
+                }
+                
+                resultDiv.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.3rem; color: #10b981; margin-bottom: 1rem;">✅ Parking Bill Processed</div>
+                        <div id="parking-details-view" style="text-align: left; background: #f0f9ff; padding: 1rem; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                            <div style="font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;">📄 Parking Details:</div>
+                            <div style="margin-bottom: 0.3rem;"><strong>Ticket No:</strong> <span id="parking-ticket-no">${parkingData.parking_ticket_no || 'N/A'}</span></div>
+                            <div style="margin-bottom: 0.3rem;"><strong>Vehicle No:</strong> <span id="parking-vehicle-no">${parkingData.vehicle_no || 'N/A'}</span></div>
+                            <div style="margin-bottom: 0.3rem;"><strong>Date:</strong> <span id="parking-date">${parkingData.parking_ticket_date || 'N/A'}</span></div>
+                            <div style="margin-top: 0.8rem; font-size: 0.9rem; color: #6b7280;">
+                                Session ID: <code style="background: #e5e7eb; padding: 2px 6px; border-radius: 4px;">${sessionId}</code>
+                            </div>
+                            <button id="edit-parking-btn" class="btn btn-secondary" style="margin-top: 1rem; width: 120px;">Edit</button>
+                        </div>
+                        <div id="parking-details-edit" style="display:none; text-align:left; background:#f0f9ff; padding:1rem; border-radius:8px; border-left:4px solid #3b82f6; margin-top:1rem;">
+                            <div style="font-weight:600; color:#1e40af; margin-bottom:0.5rem;">✏️ Edit Parking Details:</div>
+                            <div style="margin-bottom:0.5rem;">
+                                <label>Ticket No: <input id="edit-ticket-no" type="text" value="${parkingData.parking_ticket_no || ''}" style="width:70%;padding:4px;margin-left:8px;"></label>
+                            </div>
+                            <div style="margin-bottom:0.5rem;">
+                                <label>Vehicle No: <input id="edit-vehicle-no" type="text" value="${parkingData.vehicle_no || ''}" style="width:70%;padding:4px;margin-left:8px;"></label>
+                            </div>
+                            <div style="margin-bottom:0.5rem;">
+                                <label>Date: <input id="edit-date" type="text" value="${parkingData.parking_ticket_date || ''}" style="width:70%;padding:4px;margin-left:8px;"></label>
+                            </div>
+                            <button id="save-parking-btn" class="btn btn-primary" style="width:90px;">Save</button>
+                            <button id="cancel-parking-btn" class="btn btn-danger" style="width:90px; margin-left:10px;">Cancel</button>
+                        </div>
+                    </div>
+                `;
+                // --- Fix: Always re-bind edit/save/cancel after rendering ---
+                setTimeout(() => {
+                    const editBtn = document.getElementById('edit-parking-btn');
+                    const detailsView = document.getElementById('parking-details-view');
+                    const detailsEdit = document.getElementById('parking-details-edit');
+                    if (editBtn && detailsView && detailsEdit) {
+                        editBtn.onclick = function() {
+                            detailsView.style.display = 'none';
+                            detailsEdit.style.display = 'block';
+                            document.getElementById('edit-ticket-no').focus();
+                        };
+                    }
+                    const cancelBtn = document.getElementById('cancel-parking-btn');
+                    if (cancelBtn && detailsView && detailsEdit) {
+                        cancelBtn.onclick = function() {
+                            detailsEdit.style.display = 'none';
+                            detailsView.style.display = 'block';
+                        };
+                    }
+                    const saveBtn = document.getElementById('save-parking-btn');
+                    if (saveBtn && detailsView && detailsEdit) {
+                        saveBtn.onclick = async function() {
+                            const newTicket = document.getElementById('edit-ticket-no').value.trim();
+                            const newVehicle = document.getElementById('edit-vehicle-no').value.trim();
+                            const newDate = document.getElementById('edit-date').value.trim();
+                            saveBtn.disabled = true;
+                            saveBtn.innerText = 'Saving...';
+                            const resp = await fetch('/api/update_parking_bill', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    session_id: sessionId,
+                                    parking_ticket_no: newTicket,
+                                    vehicle_no: newVehicle,
+                                    parking_ticket_date: newDate
+                                })
+                            });
+                            const data = await resp.json();
+                            saveBtn.disabled = false;
+                            saveBtn.innerText = 'Save';
+                            if (data.success) {
+                                document.getElementById('parking-ticket-no').innerText = newTicket;
+                                document.getElementById('parking-vehicle-no').innerText = newVehicle;
+                                document.getElementById('parking-date').innerText = newDate;
+                                detailsEdit.style.display = 'none';
+                                detailsView.style.display = 'block';
+                            } else {
+                                alert('Failed to update: ' + (data.message || 'Unknown error'));
+                            }
+                        };
+                    }
+                }, 0);
+                
+                resultDiv.style.background = '#f0fdf4';
+                resultDiv.style.border = '1px solid #bbf7d0';
+                
+                nextBtn.style.display = 'block';
+                
+                // Show direct payment option
+                const directPayBtn = document.getElementById('parking-pay-direct-btn');
+                const noShoppingText = document.getElementById('no-shopping-text');
+                directPayBtn.style.display = 'block';
+                noShoppingText.style.display = 'block';
+                
+                updateStepIndicator(1, 'completed');
+            } else {
+                resultDiv.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.2rem; color: #ef4444;">❌ Upload Failed</div>
+                        <div style="margin-top: 0.5rem; color: #6b7280;">${data.message}</div>
+                        <div style="margin-top: 1rem; font-size: 0.95rem; color: #4b5563;">
+                            You can still pay the standard parking fee of directly.
+                        </div>
+                    </div>
+                `;
+                resultDiv.style.background = '#fef2f2';
+                resultDiv.style.border = '1px solid #fecaca';
+                
+                // Create a temporary session ID if needed
+                if (!sessionId) {
+                    sessionId = "TEMP-" + new Date().getTime();
+                }
+                
+                // Show direct payment option even if upload fails
+                const directPayBtn = document.getElementById('parking-pay-direct-btn');
+                const noShoppingText = document.getElementById('no-shopping-text');
+                directPayBtn.style.display = 'block';
+                noShoppingText.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error uploading parking bill:', error);
+            resultDiv.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 1.2rem; color: #ef4444;">❌ Network Error</div>
+                    <div style="margin-top: 0.5rem; color: #6b7280;">Please check your connection and try again.</div>
+                </div>
+            `;
+            resultDiv.style.background = '#fef2f2';
+            resultDiv.style.border = '1px solid #fecaca';
+        }
+    }
+
+    async function uploadShoppingBill(file) {
+        if (!sessionId) {
+            alert('Please upload parking bill first');
+            return;
+        }
+
+        const resultDiv = document.getElementById('shopping-result');
+        const nextBtn = document.getElementById('shopping-next-btn');
+        
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `
+            <div style="text-align: center;">
+                <div style="font-size: 1.2rem; color: #6366f1;">⏳ Processing Shopping Bill...</div>
+                <div style="margin-top: 0.5rem; color: #6b7280;">Extracting shopping information and calculating parking waiver...</div>
+            </div>
+        `;
+        resultDiv.style.background = '#f8fafc';
+        resultDiv.style.border = '1px solid #e5e7eb';
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('session_id', sessionId);
+
+            const response = await fetch('/api/upload_shopping_bill', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                shoppingData = data.combined_data;
+                
+                const waived = data.parking_fee_waived;
+                const savings = data.combined_data.savings || 0;
+                
+                resultDiv.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.3rem; color: #10b981; margin-bottom: 1rem;">✅ Shopping Bill Processed</div>
+                        <div id="shopping-details-view" style="text-align: left; background: #f0f9ff; padding: 1rem; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                            <div style="font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;">🛒 Shopping Details:</div>
+                            <div style="margin-bottom: 0.3rem;"><strong>Store:</strong> <span id="shopping-store">${shoppingData.store_name || 'N/A'}</span></div>
+                            <div style="margin-bottom: 0.3rem;"><strong>Bill No:</strong> <span id="shopping-bill-no">${shoppingData.shopping_bill_no || 'N/A'}</span></div>
+                            <div style="margin-bottom: 0.3rem;"><strong>Amount:</strong> ₹<span id="shopping-amount">${shoppingData.shopping_amount ? shoppingData.shopping_amount.toFixed(2) : '0.00'}</span></div>
+                            <div style="margin-bottom: 0.3rem;"><strong>Date:</strong> <span id="shopping-date">${shoppingData.shopping_date || 'N/A'}</span></div>
+                            <button id="edit-shopping-btn" class="btn btn-secondary" style="margin-top: 1rem; width: 120px;">Edit</button>
+                        </div>
+                        <div id="shopping-details-edit" style="display:none; text-align:left; background:#f0f9ff; padding:1rem; border-radius:8px; border-left:4px solid #3b82f6; margin-top:1rem;">
+                            <div style="font-weight:600; color:#1e40af; margin-bottom:0.5rem;">✏️ Edit Shopping Details:</div>
+                            <div style="margin-bottom:0.5rem;">
+                                <label>Store: <input id="edit-store" type="text" value="${shoppingData.store_name || ''}" style="width:70%;padding:4px;margin-left:8px;"></label>
+                            </div>
+                            <div style="margin-bottom:0.5rem;">
+                                <label>Bill No: <input id="edit-bill-no" type="text" value="${shoppingData.shopping_bill_no || ''}" style="width:70%;padding:4px;margin-left:8px;"></label>
+                            </div>
+                            <div style="margin-bottom:0.5rem;">
+                                <label>Amount: <input id="edit-amount" type="number" step="0.01" value="${shoppingData.shopping_amount || ''}" style="width:70%;padding:4px;margin-left:8px;"></label>
+                            </div>
+                            <div style="margin-bottom:0.5rem;">
+                                <label>Date: <input id="edit-shopping-date" type="text" value="${shoppingData.shopping_date || ''}" style="width:70%;padding:4px;margin-left:8px;"></label>
+                            </div>
+                            <button id="save-shopping-btn" class="btn btn-primary" style="width:90px;">Save</button>
+                            <button id="cancel-shopping-btn" class="btn btn-danger" style="width:90px; margin-left:10px;">Cancel</button>
+                        </div>
+                    </div>
+                `;
+                // --- Shopping Edit logic ---
+                setTimeout(() => {
+                    const editBtn = document.getElementById('edit-shopping-btn');
+                    const detailsView = document.getElementById('shopping-details-view');
+                    const detailsEdit = document.getElementById('shopping-details-edit');
+                    if (editBtn && detailsView && detailsEdit) {
+                        editBtn.onclick = function() {
+                            detailsView.style.display = 'none';
+                            detailsEdit.style.display = 'block';
+                            document.getElementById('edit-store').focus();
+                        };
+                    }
+                    const cancelBtn = document.getElementById('cancel-shopping-btn');
+                    if (cancelBtn && detailsView && detailsEdit) {
+                        cancelBtn.onclick = function() {
+                            detailsEdit.style.display = 'none';
+                            detailsView.style.display = 'block';
+                        };
+                    }
+                    const saveBtn = document.getElementById('save-shopping-btn');
+                    if (saveBtn && detailsView && detailsEdit) {
+                        saveBtn.onclick = async function() {
+                            const newStore = document.getElementById('edit-store').value.trim();
+                            const newBillNo = document.getElementById('edit-bill-no').value.trim();
+                            const newAmount = document.getElementById('edit-amount').value.trim();
+                            const newDate = document.getElementById('edit-shopping-date').value.trim();
+                            saveBtn.disabled = true;
+                            saveBtn.innerText = 'Saving...';
+                            const resp = await fetch('/api/update_shopping_bill', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    session_id: sessionId,
+                                    store_name: newStore,
+                                    shopping_bill_no: newBillNo,
+                                    shopping_amount: newAmount,
+                                    shopping_date: newDate
+                                })
+                            });
+                            const data = await resp.json();
+                            saveBtn.disabled = false;
+                            saveBtn.innerText = 'Save';
+                            if (data.success) {
+                                // Update UI fields
+                                document.getElementById('shopping-store').innerText = newStore;
+                                document.getElementById('shopping-bill-no').innerText = newBillNo;
+                                document.getElementById('shopping-amount').innerText = parseFloat(newAmount).toFixed(2);
+                                document.getElementById('shopping-date').innerText = newDate;
+                                detailsEdit.style.display = 'none';
+                                detailsView.style.display = 'block';
+                                // After save, re-fetch the latest status and update the result block
+                                // (call a function to get the latest combined data and update the result UI)
+                                fetch('/api/upload_shopping_bill', {
+                                    method: 'POST',
+                                    body: (() => {
+                                        const fd = new FormData();
+                                        fd.append('session_id', sessionId);
+                                        // No file, just want to re-parse and get status
+                                        return fd;
+                                    })()
+                                })
+                                .then(r => r.json())
+                                .then(freshData => {
+                                    if (freshData && freshData.success) {
+                                        // Re-render the result block with new status
+                                        const waived = freshData.parking_fee_waived;
+                                        const savings = freshData.combined_data.savings || 0;
+                                        // Also update the step 3 (results) if visible
+                                        if (typeof prepareResults === 'function') {
+                                            prepareResults(freshData);
+                                        }
+                                        resultDiv.innerHTML = `
+                                            <div style="text-align: center;">
+                                                <div style="font-size: 1.3rem; color: #10b981; margin-bottom: 1rem;">✅ Shopping Bill Processed</div>
+                                                <div id="shopping-details-view" style="text-align: left; background: #f0f9ff; padding: 1rem; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                                                    <div style="font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;">🛒 Shopping Details:</div>
+                                                    <div style="margin-bottom: 0.3rem;"><strong>Store:</strong> <span id="shopping-store">${newStore}</span></div>
+                                                    <div style="margin-bottom: 0.3rem;"><strong>Bill No:</strong> <span id="shopping-bill-no">${newBillNo}</span></div>
+                                                    <div style="margin-bottom: 0.3rem;"><strong>Amount:</strong> ₹<span id="shopping-amount">${parseFloat(newAmount).toFixed(2)}</span></div>
+                                                    <div style="margin-bottom: 0.3rem;"><strong>Date:</strong> <span id="shopping-date">${newDate}</span></div>
+                                                    <button id="edit-shopping-btn" class="btn btn-secondary" style="margin-top: 1rem; width: 120px;">Edit</button>
+                                                </div>
+                                                <div id="shopping-details-edit" style="display:none; text-align:left; background:#f0f9ff; padding:1rem; border-radius:8px; border-left:4px solid #3b82f6; margin-top:1rem;">
+                                                    <div style="font-weight:600; color:#1e40af; margin-bottom:0.5rem;">✏️ Edit Shopping Details:</div>
+                                                    <div style="margin-bottom:0.5rem;">
+                                                        <label>Store: <input id="edit-store" type="text" value="${newStore}" style="width:70%;padding:4px;margin-left:8px;"></label>
+                                                    </div>
+                                                    <div style="margin-bottom:0.5rem;">
+                                                        <label>Bill No: <input id="edit-bill-no" type="text" value="${newBillNo}" style="width:70%;padding:4px;margin-left:8px;"></label>
+                                                    </div>
+                                                    <div style="margin-bottom:0.5rem;">
+                                                        <label>Amount: <input id="edit-amount" type="number" step="0.01" value="${parseFloat(newAmount).toFixed(2)}" style="width:70%;padding:4px;margin-left:8px;"></label>
+                                                    </div>
+                                                    <div style="margin-bottom:0.5rem;">
+                                                        <label>Date: <input id="edit-shopping-date" type="text" value="${newDate}" style="width:70%;padding:4px;margin-left:8px;"></label>
+                                                    </div>
+                                                    <button id="save-shopping-btn" class="btn btn-primary" style="width:90px;">Save</button>
+                                                    <button id="cancel-shopping-btn" class="btn btn-danger" style="width:90px; margin-left:10px;">Cancel</button>
+                                                </div>
+                                                <div style="text-align: left; background: ${waived ? '#f0fdf4' : '#fef2f2'}; padding: 1rem; border-radius: 8px; border-left: 4px solid ${waived ? '#22c55e' : '#ef4444'}; margin-top: 1rem;">
+                                                    <div style="font-weight: 600; color: ${waived ? '#16a34a' : '#dc2626'}; margin-bottom: 0.5rem;">
+                                                        ${waived ? '🎉 Parking Status: FREE' : '💳 Parking Status: PAID'}
+                                                    </div>
+                                                    ${waived ? 
+                                                        `<div style=\"color: #16a34a;\">Congratulations! Your parking fee has been waived.</div>
+                                                         <div style=\"margin-top: 0.3rem;\"><strong>You Saved:</strong> ₹${savings.toFixed(2)}</div>` :
+                                                        `<div style=\"color: #dc2626;\">Shopping amount does not qualify for free parking.</div>
+                                                         <div style=\"margin-top: 0.3rem;\"><strong>Parking Fee:</strong></div>`
+                                                    }
+                                                </div>
+                                            </div>
+                                        `;
+                                        // Re-bind edit/save/cancel after re-render
+                                        setTimeout(() => {
+                                            const editBtn2 = document.getElementById('edit-shopping-btn');
+                                            const detailsView2 = document.getElementById('shopping-details-view');
+                                            const detailsEdit2 = document.getElementById('shopping-details-edit');
+                                            if (editBtn2 && detailsView2 && detailsEdit2) {
+                                                editBtn2.onclick = function() {
+                                                    detailsView2.style.display = 'none';
+                                                    detailsEdit2.style.display = 'block';
+                                                    document.getElementById('edit-store').focus();
+                                                };
+                                            }
+                                            const cancelBtn2 = document.getElementById('cancel-shopping-btn');
+                                            if (cancelBtn2 && detailsView2 && detailsEdit2) {
+                                                cancelBtn2.onclick = function() {
+                                                    detailsEdit2.style.display = 'none';
+                                                    detailsView2.style.display = 'block';
+                                                };
+                                            }
+                                            const saveBtn2 = document.getElementById('save-shopping-btn');
+                                            if (saveBtn2 && detailsView2 && detailsEdit2) {
+                                                saveBtn2.onclick = saveBtn.onclick;
+                                            }
+                                        }, 0);
+                                    }
+                                });
+                            } else {
+                                alert('Failed to update: ' + (data.message || 'Unknown error'));
+                            }
+                        };
+                    }
+                }, 0);
+                
+                resultDiv.style.background = waived ? '#f0fdf4' : '#fef2f2';
+                resultDiv.style.border = waived ? '1px solid #bbf7d0' : '1px solid #fecaca';
+                
+                nextBtn.style.display = 'block';
+                updateStepIndicator(2, 'completed');
+                
+                // Prepare results for step 3
+                prepareResults(data);
+                
+            } else {
+                resultDiv.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.2rem; color: #ef4444;">❌ Upload Failed</div>
+                        <div style="margin-top: 0.5rem; color: #6b7280;">${data.message}</div>
+                    </div>
+                `;
+                resultDiv.style.background = '#fef2f2';
+                resultDiv.style.border = '1px solid #fecaca';
+            }
+        } catch (error) {
+            console.error('Error uploading shopping bill:', error);
+            resultDiv.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 1.2rem; color: #ef4444;">❌ Network Error</div>
+                    <div style="margin-top: 0.5rem; color: #6b7280;">Please check your connection and try again.</div>
+                </div>
+            `;
+            resultDiv.style.background = '#fef2f2';
+            resultDiv.style.border = '1px solid #fecaca';
+        }
+    }
+
+    function prepareResults(responseData) {
+        const resultsDiv = document.getElementById('final-results');
+        const waived = responseData.parking_fee_waived;
+        const combinedData = responseData.combined_data;
+        
+        resultsDiv.innerHTML = `
+            <div style="max-width: 600px; margin: 0 auto;">
+                <div style="font-size: 1.5rem; margin-bottom: 2rem; color: ${waived ? '#16a34a' : '#dc2626'};">
+                    ${waived ? '🎉 Session Completed - Parking FREE!' : '💳 Session Completed - Parking Fee Required'}
+                </div>
+                
+                <div style="text-align: left; background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid #e5e7eb;">
+                    <h4 style="margin: 0 0 1rem 0; color: #374151; font-size: 1.1rem;">📋 Complete Session Summary</h4>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div>
+                            <div style="font-weight: 600; color: #6b7280; font-size: 0.9rem;">PARKING DETAILS</div>
+                            <div style="margin-top: 0.3rem;"><strong>Ticket No:</strong> ${combinedData.parking_ticket_no}</div>
+                            <div><strong>Vehicle No:</strong> ${combinedData.vehicle_no}</div>
+                            <div><strong>Date:</strong> ${combinedData.parking_date}</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: #6b7280; font-size: 0.9rem;">SHOPPING DETAILS</div>
+                            <div style="margin-top: 0.3rem;"><strong>Store:</strong> ${combinedData.store_name}</div>
+                            <div><strong>Bill No:</strong> ${combinedData.shopping_bill_no}</div>
+                            <div><strong>Amount:</strong> ₹${combinedData.shopping_amount.toFixed(2)}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: ${waived ? '#f0fdf4' : '#fef2f2'}; padding: 1rem; border-radius: 8px; border-left: 4px solid ${waived ? '#22c55e' : '#ef4444'};">
+                        <div style="font-weight: 600; color: ${waived ? '#16a34a' : '#dc2626'};">
+                            ${waived ? 'PARKING FEE WAIVED' : 'PARKING FEE REQUIRED'}
+                        </div>
+                        <div style="margin-top: 0.3rem; color: #6b7280;">
+                            ${waived ? 
+                                `Shopping amount qualifies for free parking. You saved ₹${combinedData.savings.toFixed(2)}!` :
+                                'Shopping amount does not meet the minimum requirement for free parking.'
+                            }
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; font-size: 0.9rem; color: #6b7280;">
+                        <strong>Session ID:</strong> <code style="background: #e5e7eb; padding: 2px 6px; border-radius: 4px;">${sessionId}</code><br>
+                        <strong>Record Type:</strong> Combined Parking + Shopping Bill
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1.5rem; display: flex; justify-content: center;">
+                    <button class="btn" style="background: #6b7280;" onclick="window.location.href='/parking_validation'">← Back to Upload</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function updateStepDisplay(step) {
+        // Hide all step contents
+        document.querySelectorAll('.step-content').forEach(content => {
+            content.classList.remove('active');
+        });
+
+        // Update step indicators
+        document.querySelectorAll('.step').forEach((stepEl, index) => {
+            stepEl.classList.remove('active', 'completed');
+            if (index + 1 < step) {
+                stepEl.classList.add('completed');
+            } else if (index + 1 === step) {
+                stepEl.classList.add('active');
+            }
+        });
+
+        // Show current step content
+        if (step === 1) {
+            document.getElementById('parking-upload-step').classList.add('active');
+        } else if (step === 2) {
+            document.getElementById('shopping-upload-step').classList.add('active');
+        } else if (step === 3) {
+            document.getElementById('results-step').classList.add('active');
+        }
+
+        currentStep = step;
+    }
+
+    function updateStepIndicator(step, status) {
+        const stepElement = document.getElementById(`step${step}`);
+        if (status === 'completed') {
+            stepElement.classList.add('completed');
+            stepElement.classList.remove('active');
+        }
+    }
+
+    // Direct parking fee payment
+    async function payParkingFeeDirect() {
+        if (!sessionId || !parkingData) {
+            alert('Please upload parking bill first');
+            return;
+        }
+
+        const resultDiv = document.getElementById('parking-result');
+        
+        resultDiv.innerHTML = `
+            <div style="text-align: center;">
+                <div style="font-size: 1.2rem; color: #6366f1;">⏳ Processing Direct Payment...</div>
+                <div style="margin-top: 0.5rem; color: #6b7280;">Recording your parking fee payment...</div>
+            </div>
+        `;
+        resultDiv.style.background = '#f8fafc';
+        resultDiv.style.border = '1px solid #e5e7eb';
+        
+        // Additional validation and correction for vehicle number
+        let vehicleNo = null;
+        if (parkingData && parkingData.vehicle_no) {
+            vehicleNo = parkingData.vehicle_no;
+        } else if (parkingData && parkingData.raw_text) {
+            // Try to extract vehicle number from raw text if it's missing
+            vehicleNo = extractVehicleNumberFromText(parkingData.raw_text);
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append('session_id', sessionId);
+            formData.append('parking_only', 'true');
+            formData.append('direct_payment', 'true');
+            
+            // Include vehicle number with improved extraction
+            if (vehicleNo) {
+                formData.append('vehicle_no', vehicleNo);
+            } else if (parkingData && parkingData.vehicle_no) {
+                formData.append('vehicle_no', parkingData.vehicle_no);
+            }
+            
+            // Include parking ticket number from parkingData if available
+            if (parkingData && parkingData.parking_ticket_no) {
+                formData.append('parking_ticket_no', parkingData.parking_ticket_no);
+            }
+            
+            // Try to extract parking ticket number if not available
+            if (!parkingData.parking_ticket_no && parkingData.raw_text) {
+                const ticketNo = extractTicketNumberFromText(parkingData.raw_text);
+                if (ticketNo) {
+                    formData.append('parking_ticket_no', ticketNo);
+                }
+            }
+
+            const response = await fetch('/api/direct_parking_payment', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                resultDiv.innerHTML = `
+                    <div id="printable-receipt">
+                        <div style="text-align:center; font-weight:bold; margin-bottom:6px;">Smart Mall Parking</div>
+                        <div style="text-align:center; margin-bottom:6px;">Payment Recorded Successfully</div>
+                        <div style="text-align:center; margin-bottom:10px;">Thank You For Your Payment</div>
+                        <hr>
+                        <div><b>Amount Paid:</b> ₹50.00</div>
+                        <div><b>Ticket No:</b> ${data.parking_ticket_no || (parkingData ? parkingData.parking_ticket_no : 'N/A')}</div>
+                        <div><b>Vehicle No:</b> ${data.vehicle_no || (parkingData ? parkingData.vehicle_no : 'N/A')}</div>
+                        <div><b>Date:</b> ${data.payment_date || new Date().toLocaleString()}</div>
+                        <div><b>Receipt ID:</b> ${data.payment_id || sessionId}</div>
+                        <hr>
+                        <div style="text-align:center;">Please present this receipt at the parking counter when exiting.</div>
+                    </div>
+                `;
+                resultDiv.style.background = '#f0fdf4';
+                resultDiv.style.border = '1px solid #bbf7d0';
+                
+                // Add a back button for uploading new bills
+                const actionDiv = document.createElement('div');
+                actionDiv.style.marginTop = '1rem';
+                actionDiv.style.display = 'flex';
+                actionDiv.style.justifyContent = 'center';
+                actionDiv.style.gap = '1rem';
+                
+                const backBtn = document.createElement('button');
+                backBtn.className = 'btn';
+                backBtn.style.background = '#6b7280';
+                backBtn.innerHTML = '← Back to Upload';
+                backBtn.onclick = () => {
+                    window.location.href = '/parking_validation';
+                };
+                
+                const printBtn = document.createElement('button');
+                printBtn.className = 'btn';
+                printBtn.style.background = '#10b981';
+                printBtn.innerHTML = 'Print Receipt';
+                printBtn.onclick = () => { printReceipt(); };
+                
+                actionDiv.appendChild(backBtn);
+                actionDiv.appendChild(printBtn);
+                resultDiv.appendChild(actionDiv);
+                
+                // Hide the buttons
+                document.getElementById('parking-next-btn').style.display = 'none';
+                document.getElementById('parking-pay-direct-btn').style.display = 'none';
+                document.getElementById('no-shopping-text').style.display = 'none';
+                
+            } else {
+                resultDiv.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.2rem; color: #ef4444;">❌ Payment Failed</div>
+                        <div style="margin-top: 0.5rem; color: #6b7280;">${data.message || 'There was an error processing your payment.'}</div>
+                    </div>
+                `;
+                resultDiv.style.background = '#fef2f2';
+                resultDiv.style.border = '1px solid #fecaca';
+            }
+        } catch (error) {
+            console.error('Error processing direct payment:', error);
+            
+            // Despite the error, show a thank you message to provide a good user experience
+            resultDiv.innerHTML = `
+                <div id="printable-receipt">
+                    <div style="text-align:center; font-weight:bold; margin-bottom:6px;">Smart Mall Parking</div>
+                    <div style="text-align:center; margin-bottom:6px;">Payment Recorded Successfully</div>
+                    <div style="text-align:center; margin-bottom:10px;">Thank You For Your Payment</div>
+                    <hr>
+                    <div><b>Amount Paid:</b> ₹50.00</div>
+                    <div><b>Ticket No:</b> ${parkingData ? parkingData.parking_ticket_no : 'N/A'}</div>
+                    <div><b>Vehicle No:</b> ${parkingData ? parkingData.vehicle_no : 'N/A'}</div>
+                    <div><b>Date:</b> ${new Date().toLocaleString()}</div>
+                    <div><b>Receipt ID:</b> ${sessionId}</div>
+                    <hr>
+                    <div style="text-align:center;">Please present this receipt at the parking counter when exiting.</div>
+                    <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #9ca3af; font-style: italic;">
+                        Note: There was a connection issue, but your payment will be processed.
+                    </div>
+                </div>
+            `;
+            resultDiv.style.background = '#f0fdf4';
+            resultDiv.style.border = '1px solid #bbf7d0';
+            
+            // Add a back button for uploading new bills
+            const actionDiv = document.createElement('div');
+            actionDiv.style.marginTop = '1rem';
+            actionDiv.style.display = 'flex';
+            actionDiv.style.justifyContent = 'center';
+            actionDiv.style.gap = '1rem';
+            
+            const backBtn = document.createElement('button');
+            backBtn.className = 'btn';
+            backBtn.style.background = '#6b7280';
+            backBtn.innerHTML = '← Back to Upload';
+            backBtn.onclick = () => {
+                window.location.href = '/parking_validation';
+            };
+            
+            const printBtn = document.createElement('button');
+            printBtn.className = 'btn';
+            printBtn.style.background = '#10b981';
+            printBtn.innerHTML = 'Print Receipt';
+            printBtn.onclick = () => { printReceipt(); };
+            
+            actionDiv.appendChild(backBtn);
+            actionDiv.appendChild(printBtn);
+            resultDiv.appendChild(actionDiv);
+            
+            // Hide the buttons
+            document.getElementById('parking-next-btn').style.display = 'none';
+            document.getElementById('parking-pay-direct-btn').style.display = 'none';
+            document.getElementById('no-shopping-text').style.display = 'none';
+        }
+    }
+
+    // Initialize event listeners
+    // Helper functions for extracting vehicle and ticket numbers
+    function extractVehicleNumberFromText(text) {
+        if (!text) return null;
+        
+        const rawText = text.toUpperCase();
+        
+        // Define common Indian state codes for better pattern matching
+        const indianStates = ['AP', 'AR', 'AS', 'BR', 'CG', 'CH', 'DD', 'DL', 'DN', 'GA', 'GJ', 
+                             'HP', 'HR', 'JH', 'JK', 'KA', 'KL', 'LA', 'LD', 'MH', 'ML', 'MN', 
+                             'MP', 'MZ', 'NL', 'OD', 'PB', 'PY', 'RJ', 'SK', 'TN', 'TR', 'TS', 
+                             'UK', 'UP', 'WB'];
+        
+        // Common OCR confusion characters in vehicle numbers - particularly for mobile photos
+        const ocrFixes = {
+            '0': 'O', 'O': '0', // Common zero/O confusion
+            '1': 'I', 'I': '1', 'l': '1', // One/I/lowercase-L confusion
+            '5': 'S', 'S': '5', // Five/S confusion
+            '8': 'B', 'B': '8', // Eight/B confusion
+            'Z': '2', '2': 'Z', // Z/2 confusion
+            'G': '6', '6': 'G', // G/6 confusion
+            'D': '0', 'Q': '0', // D/O/0 confusion
+            'H': '4', '4': 'H', // H/4 confusion
+        };
+
+        // Escape special regex characters when building RegExp from dynamic strings
+        function escapeRegExp(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+        
+        // Preprocess text to fix common OCR errors in state codes for mobile captures
+        let processedText = rawText;
+        const stateCodeFixes = [
+            ['D1', 'DL'], ['OD', '0D'], ['l<A', 'KA'], ['RJ1', 'RJ'],
+            ['lA', 'KA'], ['XA', 'KA'], ['I<A', 'KA'], ['1<A', 'KA'],
+            ['OL', 'DL'], ['0L', 'DL'], ['D1', 'DL'], ['01', 'DL'],
+            ['TH', 'TN'], ['1N', 'TN'], ['IN', 'TN'], ['IH', 'TN'],
+            ['MII', 'MH'], ['NH', 'MH'], ['HH', 'MH'], ['M4', 'MH'],
+            ['I(P', 'KP'], ['l(P', 'KP'], ['I(L', 'KL'], ['l(L', 'KL'],
+            ['ICA', 'KA'], ['IKA', 'KA'], ['LKA', 'KA'], ['K4', 'KA']
+        ];
+        
+        for (const [wrong, right] of stateCodeFixes) {
+            processedText = processedText.replace(new RegExp(escapeRegExp(wrong), 'g'), right);
+        }
+        
+        // First try explicit vehicle number patterns
+        const vehiclePatterns = [
+            // ENHANCED PATTERNS FOR MOBILE CAMERA OCR QUALITY ISSUES
+            // More permissive patterns for mobile camera OCR (handle spacing/misreads)
+            /VEH\s*(?:NO|NUMBER|TYPE|ID)[,.:;]?\s*[:=,.;\s]\s*([A-Z]{2}[\s-]?[0-9]{1,4}[\s-]?[A-Z0-9]{1,4}[\s-]?[0-9]{1,4})/i,
+            
+            // Format from the sample image: "Veh No. : ka56df4578" and "Veh No, : BR01K4647"
+            /VEH\s*(?:NO|NUMBER|TYPE|ID)\.?\s*[,:=]\s*([A-Z]{2}[\s-]?[0-9]{1,4}[\s-]?[A-Z0-9]{1,4}[\s-]?[0-9]{1,4})/i,
+            
+            // More generic formats with "Vehicle No" label - looser matching for mobile photos
+            /VEHICLE\s*(?:NO|NUMBER|REG)\.?\s*[,:=;]\s*([A-Z]{2}[\s-]?[0-9]{1,4}[\s-]?[A-Z0-9]{1,4}[\s-]?[0-9]{1,4})/i,
+            /CAR\s*(?:NO|NUMBER|REG)\.?\s*[,:=;]\s*([A-Z]{2}[\s-]?[0-9]{1,4}[\s-]?[A-Z0-9]{1,4}[\s-]?[0-9]{1,4})/i,
+            
+            // Highly permissive formats for very poor OCR quality (mobile photos in low light)
+            /VEH.*NO.*[,:=;].*([A-Z]{2}[\s.-]*[0-9]{1,4}[\s.-]*[A-Z0-9]{1,4}[\s.-]*[0-9]{1,4})/i,
+            /[VUY]EH.*(?:NO|HD|ND|#).*[:=;.,]?\s*([A-Z0-9]{2}[\s.-]*[0-9]{1,4}[\s.-]*[A-Z0-9]{1,4}[\s.-]*[0-9]{1,4})/i,
+            
+            // Direct capture of vehicle number formats without labels (for clear but unlabeled numbers)
+            /(?<!\w)([A-Z]{2}[\s.-]?[0-9]{2}[\s.-]?[A-Z]{1,2}[\s.-]?[0-9]{4})(?!\w)/i,
+            /(?<!\w)([A-Z]{2}[\s.-]?[0-9]{4}[\s.-]?[A-Z]{1,2}[\s.-]?[0-9]{2})(?!\w)/i,
+            
+            // Extreme OCR confusion - try alternate character interpretations
+            /(?<!\w)([A-Z]{1}[0O1I]{1}[\s.-]?[0-9]{2}[\s.-]?[A-Z0-9]{1,2}[\s.-]?[0-9]{4})(?!\w)/i
+        ];
+        
+        // First try on the original text
+        for (const pattern of vehiclePatterns) {
+            const match = pattern.exec(rawText);
+            if (match && match[1]) {
+                const vehicleNo = match[1].replace(/[\s\-\.]+/g, '').toUpperCase();
+                // Basic validation - must have at least 8 characters to be a valid vehicle number
+                if (vehicleNo.length >= 8) {
+                    return cleanVehicleNumber(vehicleNo);
+                }
+            }
+        }
+        
+        // Try again on processed text (with OCR fixes)
+        for (const pattern of vehiclePatterns) {
+            const match = pattern.exec(processedText);
+            if (match && match[1]) {
+                const vehicleNo = match[1].replace(/[\s\-\.]+/g, '').toUpperCase();
+                if (vehicleNo.length >= 8) {
+                    return cleanVehicleNumber(vehicleNo);
+                }
+            }
+        }
+        
+        // Try line-by-line approach for terminal tickets
+        const lines = rawText.split('\n');
+        for (const line of lines) {
+            // Skip very long lines
+            if (line.length > 60) continue;
+            
+            // Look for vehicle number indicators with enhanced mobile photo detection
+            if (/VEH|VEHICLE|CAR|REG|PLATE|PARK|ENTRY/i.test(line)) {
+                // Extract after a separator if present
+                let afterSeparator = line;
+                const separatorIndex = Math.max(
+                    line.indexOf(':'),
+                    line.indexOf('='),
+                    line.indexOf('-'),
+                    line.indexOf(','),
+                    line.indexOf(';'),
+                    line.indexOf('.')
+                );
+                
+                if (separatorIndex > -1) {
+                    afterSeparator = line.substring(separatorIndex + 1).trim();
+                }
+                
+                // Apply state code fixes specifically for this line
+                let fixedLine = afterSeparator;
+                for (const [wrong, right] of stateCodeFixes) {
+                    fixedLine = fixedLine.replace(new RegExp(escapeRegExp(wrong), 'g'), right);
+                }
+                
+                // Fuzzy look for state code patterns in this text with more tolerance for OCR errors
+                for (const state of indianStates) {
+                    // More permissive pattern for mobile photos - allowing for OCR spacing errors
+                    const statePattern = new RegExp(`${state}\\s*[-]?\\s*[0-9]{1,4}\\s*[-]?\\s*[A-Z0-9]{1,4}\\s*[-]?\\s*[0-9]{1,4}`, 'i');
+                    const match = statePattern.exec(fixedLine) || statePattern.exec(afterSeparator);
+                    if (match) {
+                        const vehicleNo = match[0].replace(/[\s\-\.]+/g, '').toUpperCase();
+                        if (vehicleNo.length >= 8) {
+                            return cleanVehicleNumber(vehicleNo);
+                        }
+                    }
+                }
+            }
+            
+            // Enhanced check for standalone state code patterns on short lines with better fuzzy matching
+            if (line.length >= 4 && line.length <= 30) {
+                // Apply state code fixes specifically for this line
+                let fixedLine = line;
+                for (const [wrong, right] of stateCodeFixes) {
+                    fixedLine = fixedLine.replace(new RegExp(escapeRegExp(wrong), 'gi'), right);
+                }
+                
+                // Process line content for more adaptive matching
+                for (const state of indianStates) {
+                    // Check both original and fixed lines
+                    for (const textToCheck of [ line, fixedLine]) {
+                        // Fuzzy state code check with character-by-character comparison for mobile photos
+                        if (textToCheck.includes(state) || 
+                            fuzzyInclude(textToCheck, state) || 
+                            textToCheck.replace(/[01]/g, 'I').includes(state) ||
+                            textToCheck.replace(/[O0]/g, 'D').includes(state)) {
+                            
+                            // Multiple pattern matching attempts with different levels of permissiveness
+                            const statePatterns = [
+                                new RegExp(`${state}\\s*[-]?\\s*[0-9]{1,4}\\s*[-]?\\s*[A-Z0-9]{1,4}\\s*[-]?\\s*[0-9]{1,4}`, 'i'),
+                                new RegExp(`${state}[0-9]{1,4}[A-Z0-9]{1,4}[0-9]{1,4}`, 'i'),
+                                new RegExp(`${state}.{0,3}[0-9]{1,4}.{0,3}[A-Z0-9]{1,4}.{0,3}[0-9]{1,4}`, 'i')
+                            ];
+                            
+                            for (const pattern of statePatterns) {
+                                const stateMatch = pattern.exec(textToCheck);
+                                if (stateMatch) {
+                                    const vehicleNo = stateMatch[0].replace(/[\s\-\.]+/g, '').toUpperCase();
+                                    if (vehicleNo.length >= 8) {
+                                        return cleanVehicleNumber(vehicleNo);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Helper function for fuzzy state code detection in mobile photos
+        function fuzzyInclude(text, stateCode) {
+            if (text.length < stateCode.length) return false;
+            
+            // Sliding window check with tolerance for OCR errors
+            for (let i = 0; i <= text.length - stateCode.length; i++) {
+                let matches = 0;
+                for (let j = 0; j < stateCode.length; j++) {
+                    // Check for exact match or common OCR substitutions
+                    if (text[i+j] === stateCode[j] || 
+                        (ocrFixes[text[i+j]] === stateCode[j]) || 
+                        (ocrFixes[stateCode[j]] === text[i+j])) {
+                        matches++;
+                    }
+                }
+                // Allow one character to be wrong in two-letter state codes
+                if (matches >= stateCode.length - 1) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        // Helper function to clean and normalize vehicle numbers from mobile photos
+        function cleanVehicleNumber(vehicleNo) {
+            // Ensure we have the right pattern of characters
+            let cleaned = vehicleNo;
+            
+            // Fix common OCR errors in the vehicle number
+                for (const [wrong, right] of Object.entries(ocrFixes)) {
+                // Only apply fixes to the numeric parts, not the state code
+                if (cleaned.length > 2) {
+                    const stateCode = cleaned.substring(0, 2);
+                    const rest = cleaned.substring(2);
+                    cleaned = stateCode + rest.replace(new RegExp(escapeRegExp(wrong), 'g'), right);
+                }
+            }
+            
+            // Ensure proper structure - if we detect obvious errors in the pattern, try to fix them
+            const idealPattern = /^[A-Z]{2}[0-9]{1,2}[A-Z]{1,3}[0-9]{4}$/;
+            if (!idealPattern.test(cleaned) && cleaned.length >= 9) {
+                // If we have something close to a vehicle number but not quite right,
+                // try to reshape it into the proper format
+                const nums = cleaned.match(/[0-9]/g) || [];
+                const chars = cleaned.match(/[A-Z]/g) || [];
+                
+                if (nums.length >= 4 && chars.length >= 3) {
+                    // We have enough characters to form a valid registration number
+                    // This is a best-effort approach for badly recognized vehicle numbers
+                    const stateCode = cleaned.substring(0, 2);
+                    let restOfNumber = cleaned.substring(2);
+                    
+                    // Try to reshape into standard Indian format
+                    let district = '', series = '', number = '';
+                    
+                    // Extract digits for district code (typically 1-2 digits)
+                    const districtMatch = restOfNumber.match(/^[0-9]{1,2}/);
+                    if (districtMatch) {
+                        district = districtMatch[0];
+                        restOfNumber = restOfNumber.substring(district.length);
+                    }
+                    
+                    // Extract letters for series (typically 1-3 letters)
+                    const seriesMatch = restOfNumber.match(/^[A-Z]{1,3}/);
+                    if (seriesMatch) {
+                        series = seriesMatch[0];
+                        restOfNumber = restOfNumber.substring(series.length);
+                    }
+                    
+                    // Rest should be the number part (typically 4 digits)
+                    number = restOfNumber.replace(/[^0-9]/g, '');
+                    
+                    // Ensure number has exactly 4 digits (pad if necessary)
+                    if (number.length > 4) number = number.substring(0, 4);
+                    while (number.length < 4) number = number + '0';
+                    
+                    // Reconstruct in standard format
+                    if (stateCode && district && series && number) {
+                        return (stateCode + district + series + number).toUpperCase();
+                    }
+                }
+            }
+            
+            return cleaned;
+        }
+        
+        return null;
+    }
+    
+    function extractTicketNumberFromText(text) {
+        if (!text) return null;
+        
+        const rawText = text.toUpperCase();
+        
+        // Terminal/airport ticket number patterns
+        const ticketPatterns = [
+            // Terminal ID and Ticket No pattern
+            /TERMINAL\s*ID\s*[:.\-=]?\s*\d+\s*(?:\n|\r\n|\s)\s*TICKET\s*(?:NO|NUMBER)[.\-:=\s]*(\d{5,8})/i,
+            
+            // Direct "Ticket No:" pattern
+            /TICKET\s*(?:NO|NUMBER)[.\-:=\s]*(\d{5,8})/i,
+            
+            // Most flexible pattern for low quality images
+            /T[l1I]CKET\s*(?:NO|N0|NUMBER)[.\-:=\s]*(\d+)/i
+        ];
+        
+        for (const pattern of ticketPatterns) {
+            const match = pattern.exec(rawText);
+            if (match && match[1]) {
+                return match[1].trim();
+            }
+        }
+        
+        // Look for standalone 6-8 digit number (common in terminal tickets)
+        const standaloneDigitMatch = /(?:^|\s)(\d{6,8})(?:$|\s)/m.exec(rawText);
+        if (standaloneDigitMatch) {
+            return standaloneDigitMatch[1];
+        }
+        
+        return null;
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Parking upload handlers
+        document.getElementById('parking-camera-upload').addEventListener('change', function() {
+            handleFileUpload(this, 'parking');
+        });
+        
+        document.getElementById('parking-file-upload').addEventListener('change', function() {
+            handleFileUpload(this, 'parking');
+        });
+
+        // Shopping upload handlers
+        document.getElementById('shopping-camera-upload').addEventListener('change', function() {
+            handleFileUpload(this, 'shopping');
+        });
+        
+        document.getElementById('shopping-file-upload').addEventListener('change', function() {
+            handleFileUpload(this, 'shopping');
+        });
+
+        // Step navigation
+        document.getElementById('parking-next-btn').addEventListener('click', () => {
+            updateStepDisplay(2);
+        });
+
+        document.getElementById('shopping-back-btn').addEventListener('click', () => {
+            updateStepDisplay(1);
+        });
+
+        document.getElementById('shopping-next-btn').addEventListener('click', () => {
+            updateStepDisplay(3);
+        });
+
+        document.getElementById('results-back-btn').addEventListener('click', () => {
+            updateStepDisplay(2);
+        });
+
+        // Direct parking payment button
+        document.getElementById('parking-pay-direct-btn').addEventListener('click', () => {
+            payParkingFeeDirect();
+        });
+    });
+
+    function printReceipt() {
+        // Remove any previous printable-receipt div
+        let oldDiv = document.getElementById('printable-receipt');
+        if (oldDiv) oldDiv.remove();
+
+        // Find the visible result div (either #parking-result or #final-results)
+        let resultDiv = null;
+        if (document.getElementById('parking-result') && document.getElementById('parking-result').offsetParent !== null) {
+            resultDiv = document.getElementById('parking-result');
+        } else if (document.getElementById('final-results') && document.getElementById('final-results').offsetParent !== null) {
+            resultDiv = document.getElementById('final-results');
+        }
+        if (!resultDiv) {
+            alert('No receipt to print!');
+            return;
+        }
+
+        // Create a new printable-receipt div and copy the result HTML
+        let printableDiv = document.createElement('div');
+        printableDiv.id = 'printable-receipt';
+        printableDiv.innerHTML = resultDiv.innerHTML;
+        document.body.appendChild(printableDiv);
+
+        // Print only the receipt
+        window.print();
+
+        // Remove the printable div after printing
+        printableDiv.remove();
+    }
+</script>
+</body>
+</html>

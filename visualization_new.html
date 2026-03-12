@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analytics - Smart Mall Parking</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%234f46e5;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23818cf8;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='20' fill='url(%23grad)'/%3E%3Ctext x='50' y='70' font-family='Orbitron,sans-serif' font-size='45' font-weight='700' text-anchor='middle' fill='white'%3E📊%3C/text%3E%3C/svg%3E">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --dark: #0f172a;
+            --surface: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-900: #0f172a;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            color: var(--gray-900);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Modern Header */
+        .header {
+            background: linear-gradient(120deg, #6366f1 0%, #818cf8 60%, #10b981 100%);
+            color: #fff;
+            padding: 2rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            animation: float 20s linear infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-60px); }
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* Navigation */
+        .nav-container {
+            background: var(--surface);
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+        }
+        
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background: rgba(99,102,241,0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .back-link:hover {
+            background: rgba(99,102,241,0.15);
+            transform: translateY(-1px);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient);
+            transition: height 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        }
+        
+        .stat-card:hover::before {
+            height: 6px;
+        }
+        
+        .stat-card.primary { --gradient: linear-gradient(135deg, #6366f1, #818cf8); }
+        .stat-card.success { --gradient: linear-gradient(135deg, #10b981, #34d399); }
+        .stat-card.warning { --gradient: linear-gradient(135deg, #f59e0b, #fbbf24); }
+        .stat-card.danger { --gradient: linear-gradient(135deg, #ef4444, #f87171); }
+        
+        .stat-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+            background: var(--gradient);
+            margin-bottom: 1rem;
+        }
+        
+        .stat-title {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-change {
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .stat-change.positive {
+            color: var(--success);
+        }
+        
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .chart-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+        
+        .chart-subtitle {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        /* Recent Activity */
+        .recent-activity {
+            background: var(--surface);
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            overflow: hidden;
+        }
+        
+        .activity-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .activity-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+        
+        .activity-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gray-100);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: background-color 0.2s ease;
+        }
+        
+        .activity-item:hover {
+            background: var(--gray-50);
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+        
+        .activity-icon.shopping {
+            background: var(--primary);
+        }
+        
+        .activity-icon.parking {
+            background: var(--success);
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-text {
+            font-weight: 500;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+        
+        .activity-meta {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+        
+        .activity-amount {
+            font-weight: 600;
+            color: var(--success);
+        }
+        
+        /* Loading State */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            color: var(--gray-500);
+        }
+        
+        .spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid var(--gray-200);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-chart-line"></i> Data Analytics Dashboard</h1>
+                <p>Real-time insights into your smart parking and shopping data</p>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-container">
+            <div class="nav-content">
+                <a href="/" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Home
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Stats Grid -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading dashboard stats...
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Daily Revenue Trend</h3>
+                        <p class="chart-subtitle">Shopping revenue over the last 30 days</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Receipt Distribution</h3>
+                        <p class="chart-subtitle">Shopping vs Parking receipts</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="distributionChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Hourly Activity</h3>
+                        <p class="chart-subtitle">Peak hours for shopping activity</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="hourlyChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Amount Distribution</h3>
+                        <p class="chart-subtitle">Shopping amount ranges</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="amountChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="recent-activity">
+                <div class="activity-header">
+                    <h3 class="activity-title"><i class="fas fa-clock"></i> Recent Activity</h3>
+                </div>
+                <div class="activity-list" id="activityList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading recent activity...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let charts = {};
+        
+        // Initialize the dashboard
+        async function initDashboard() { 
+            try {
+                await Promise.all([
+                    loadDashboardStats(),
+                    loadShoppingStats(),
+                    loadRecentActivity()
+                ]);
+            } catch (error) {
+                console.error('Error initializing dashboard:', error);
+            }
+        }
+
+        // Load dashboard statistics
+        async function loadDashboardStats() {
+            try {
+                const response = await fetch('/api/dashboard_stats');
+                const stats = await response.json();
+                
+                const statsHtml = `
+                    <div class="stat-card primary">
+                        <div class="stat-icon"><i class="fas fa-receipt"></i></div>
+                        <div class="stat-title">Total Receipts</div>
+                        <div class="stat-value">${stats.total_receipts || 0}</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            +${stats.week_growth || 0}% this week
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card success">
+                        <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="stat-title">Shopping Receipts</div>
+                        <div class="stat-value">${stats.total_shopping_receipts || 0}</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            +${stats.month_growth || 0}% this month
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card warning">
+                        <div class="stat-icon"><i class="fas fa-car"></i></div>
+                        <div class="stat-title">Parking Receipts</div>
+                        <div class="stat-value">${stats.total_parking_receipts || 0}</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            Active
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card danger">
+                        <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
+                        <div class="stat-title">Total Revenue</div>
+                        <div class="stat-value">₹${(stats.total_revenue || 0).toLocaleString()}</div>
+                        <div class="stat-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            Avg: ₹${Math.round(stats.avg_purchase || 0)}
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('statsGrid').innerHTML = statsHtml;
+            } catch (error) {
+                console.error('Error loading dashboard stats:', error);
+                document.getElementById('statsGrid').innerHTML = '<div class="loading">Error loading statistics</div>';
+            }
+        }
+
+        // Load shopping statistics and create charts
+        async function loadShoppingStats() {
+            try {
+                const response = await fetch('/api/shopping_stats');
+                const data = await response.json();
+                
+                // Revenue Chart
+                const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+                charts.revenue = new Chart(revenueCtx, {
+                    type: 'line',
+                    data: {
+                        labels: data.daily_trend ? data.daily_trend.slice(0, 10).reverse().map(d => 
+                            new Date(d.date).toLocaleDateString('en-IN', {month: 'short', day: 'numeric'})
+                        ) : [],
+                        datasets: [{
+                            label: 'Daily Revenue',
+                            data: data.daily_trend ? data.daily_trend.slice(0, 10).reverse().map(d => d.total_amount) : [],
+                            borderColor: '#6366f1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '₹' + value.toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Distribution Chart
+                const distributionCtx = document.getElementById('distributionChart').getContext('2d');
+                charts.distribution = new Chart(distributionCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Shopping', 'Parking'],
+                        datasets: [{
+                            data: [70, 30], // Sample data
+                            backgroundColor: ['#6366f1', '#10b981'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+
+                // Hourly Chart
+                const hourlyCtx = document.getElementById('hourlyChart').getContext('2d');
+                const hourlyData = data.hourly_pattern || [];
+                charts.hourly = new Chart(hourlyCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+                        datasets: [{
+                            label: 'Receipts per Hour',
+                            data: Array.from({length: 24}, (_, i) => {
+                                const found = hourlyData.find(h => h.hour === i);
+                                return found ? found.count : 0;
+                            }),
+                            backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                            borderColor: '#10b981',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                // Amount Distribution Chart
+                const amountCtx = document.getElementById('amountChart').getContext('2d');
+                const amountData = data.amount_distribution || [];
+                charts.amount = new Chart(amountCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: amountData.map(d => `₹${d.range}`),
+                        datasets: [{
+                            label: 'Number of Receipts',
+                            data: amountData.map(d => d.count),
+                            backgroundColor: 'rgba(245, 158, 11, 0.6)',
+                            borderColor: '#f59e0b',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error loading shopping stats:', error);
+            }
+        }
+
+        // Load recent activity
+        async function loadRecentActivity() {
+            try {
+                const response = await fetch('/api/recent_receipts');
+                const data = await response.json();
+
+                
+                const activityHtml = data.recent_receipts.map(receipt => `
+                    <div class="activity-item">
+                        <div class="activity-icon ${receipt.type}"> 
+                            <i class="fas fa-${receipt.type === 'shopping' ? 'shopping-cart' : 'car'}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-text">
+                                ${receipt.type === 'shopping' ? 'Shopping' : 'Parking'} Receipt 
+                                #${receipt.bill_number}
+                            </div>
+                            <div class="activity-meta">
+                                ${receipt.store_name} • ${receipt.date}
+                                ${receipt.amount > 0 ? `• <span class="activity-amount">₹${receipt.amount}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('activityList').innerHTML = activityHtml || '<div class="loading">No recent activity</div>';
+            } catch (error) {
+                console.error('Error loading recent activity:', error);
+                document.getElementById('activityList').innerHTML = '<div class="loading">Error loading activity</div>';
+            }
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>

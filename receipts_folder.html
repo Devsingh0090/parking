@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipts Gallery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%234f46e5;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23818cf8;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='20' fill='url(%23grad)'/%3E%3Ctext x='50' y='70' font-family='Orbitron,sans-serif' font-size='60' font-weight='700' text-anchor='middle' fill='white'%3EE%3C/text%3E%3C/svg%3E">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --accent: #5651e5;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --text-dark: #333;
+            --text-light: #eee;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body { 
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f5f9;
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background: linear-gradient(120deg, #6366f1 0%, #818cf8 60%, #10b981 100%);
+            color: #fff;
+            padding: 2.2rem 0 2rem 0;
+            box-shadow: 0 6px 24px rgba(99,102,241,0.13);
+            margin-bottom: 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-wave {
+            position: absolute;
+            left: 0; bottom: 0; width: 100%; height: 60px;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .header-glow {
+            display: block;
+            margin: 0 auto;
+            width: 180px;
+            height: 24px;
+            background: radial-gradient(ellipse at center, #818cf8 0%, rgba(129,140,248,0.0) 80%);
+            filter: blur(12px);
+            opacity: 0.7;
+            position: relative;
+            top: -18px;
+            z-index: 2;
+        }
+        
+        .header-dot-cluster {
+            position: absolute;
+            top: 18px;
+            right: 32px;
+            z-index: 3;
+            display: flex;
+            gap: 8px;
+            animation: floatDots 3.5s ease-in-out infinite alternate;
+        }
+        
+        .header-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #818cf8, #10b981);
+            opacity: 0.7;
+            animation: pulseDot 2s infinite alternate;
+        }
+        
+        .header-dot:nth-child(2) { width: 7px; height: 7px; opacity: 0.5; animation-delay: 0.7s; }
+        .header-dot:nth-child(3) { width: 13px; height: 13px; opacity: 0.6; animation-delay: 1.2s; }
+        
+        @keyframes floatDots {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-12px); }
+        }
+        
+        @keyframes pulseDot {
+            0% { filter: blur(0px); }
+            100% { filter: blur(2px); }
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.7rem;
+            font-weight: 900;
+            margin: 0;
+            color: #fff;
+            letter-spacing: 0.01em;
+            text-shadow: 0 2px 16px rgba(79,70,229,0.18), 0 1px 0 #3730a3;
+            animation: fadeDown 1s cubic-bezier(.77,0,.18,1) 0.1s both;
+        }
+        
+        .header-subtitle {
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: #e0e7ff;
+            margin-top: 0.7rem;
+            margin-bottom: 0.2rem;
+            letter-spacing: 0.01em;
+            text-shadow: 0 1px 8px rgba(79,70,229,0.13);
+            animation: fadeDown 1.1s cubic-bezier(.77,0,.18,1) 0.3s both;
+        }
+        
+        @keyframes fadeDown {
+            0% { opacity: 0; transform: translateY(-30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        .container { 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            padding: 0 20px;
+            width: 100%;
+        }
+        
+        .back-link { 
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-dark);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            background-color: rgba(94, 82, 230, 0.1);
+            transition: all 0.2s;
+        }
+        
+        .back-link::before {
+            content: '←';
+            font-size: 1.2rem;
+        }
+        
+        .back-link:hover {
+            background-color: rgba(94, 82, 230, 0.2);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 25px;
+        }
+        
+        .file-list-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        
+        .file-list-header {
+            background-color: #5651e5;
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        
+        .file-list {
+            height: calc(100vh - 250px);
+            overflow-y: auto;
+            padding: 12px;
+        }
+        
+        .file-list ul {
+            list-style: none;
+        }
+        
+        .file-list li {
+            padding: 10px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            border-left: 3px solid transparent;
+            color: #555;
+        }
+        
+        .file-list li:hover {
+            background-color: rgba(94, 82, 230, 0.08);
+            border-left-color: #5651e5;
+        }
+        
+        .file-list li.active {
+            background-color: rgba(94, 82, 230, 0.14);
+            border-left-color: #5651e5;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .file-list li.processed {
+            position: relative;
+        }
+        
+        .file-list li.processed::after {
+            content: '✓';
+            position: absolute;
+            right: 10px;
+            color: #4CAF50;
+        }
+        
+        .content-container {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 25px;
+        }
+        
+        .image-preview-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .preview-header {
+            background-color: #5651e5;
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+        
+        .image-preview {
+            flex-grow: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+        
+        .image-preview img {
+            max-width: 100%;
+            max-height: 60vh;
+            object-fit: contain;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        
+        .image-info {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #666;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            word-break: break-all;
+        }
+        
+        .data-container {
+            display: grid;
+            grid-template-rows: auto auto;
+            gap: 25px;
+        }
+        
+        .extracted-data-container, .ocr-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        
+        .extracted-header, .ocr-header {
+            background-color: #5651e5;
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .extracted-content, .ocr-content {
+            padding: 20px;
+        }
+        
+        .parsed-item {
+            display: grid;
+            grid-template-columns: 130px 1fr;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .parsed-label {
+            font-weight: 500;
+            color: #666;
+        }
+        
+        .parsed-value {
+            color: #333;
+            word-break: break-all;
+        }
+        
+        .ocr-raw pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 6px;
+            color: #333;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+        }
+        
+        /* Processing indicator */
+        .processing-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #5651e5;
+            color: white;
+            border-radius: 8px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+        
+        .processing-indicator.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .processing-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Action buttons for image management */
+        .image-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            width: 100%;
+        }
+        
+        .image-action-btn {
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: none;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        
+        .delete-btn {
+            background-color: #ef4444;
+            color: white;
+        }
+        
+        .delete-btn:hover {
+            background-color: #dc2626;
+        }
+        
+        .reprocess-btn {
+            background-color: #6366f1;
+            color: white;
+        }
+        
+        .reprocess-btn:hover {
+            background-color: #4f46e5;
+        }
+        
+        /* Confirmation dialog styles */
+        .confirmation-dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .confirmation-dialog.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .dialog-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 400px;
+            max-width: 90%;
+        }
+        
+        .dialog-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .dialog-message {
+            margin-bottom: 20px;
+            color: #555;
+        }
+        
+        .dialog-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .dialog-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .confirm-btn {
+            background-color: #ef4444;
+            color: white;
+        }
+        
+        .cancel-btn {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+        
+        /* Export button styles */
+        .export-btn-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+        }
+        
+        .export-btn {
+            background-color: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .export-btn:hover {
+            background-color: #059669;
+        }
+        
+        .export-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 1200px) {
+            .content-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .file-list {
+                height: 250px;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.5rem;
+                padding: 0 0.5rem;
+            }
+            header {
+                padding: 1.2rem 0 1.2rem 0;
+            }
+            .header-glow { width: 100px; height: 16px; top: -10px; }
+            .header-dot-cluster { right: 10px; top: 10px; }
+        }
+        
+        .btn.clean-db-btn {
+            background: #fff0f0;
+            color: #ef4444;
+            border: 1.5px solid #ef4444;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 0.75rem 2rem;
+            transition: background 0.2s, color 0.2s, border 0.2s;
+            box-shadow: 0 1px 2px 0 rgb(239 68 68 / 0.05);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn.clean-db-btn:hover, .btn.clean-db-btn:focus {
+            background: #ef4444;
+            color: #fff;
+            border-color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Receipts Gallery</h1>
+            <div class="header-glow"></div>
+            <div class="header-subtitle">Smart Mall Parking System</div>
+        </div>
+        <div class="header-dot-cluster">
+            <div class="header-dot"></div>
+            <div class="header-dot"></div>
+            <div class="header-dot"></div>
+        </div>
+        <svg class="header-wave" viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,30 Q360,60 720,30 T1440,30 V60 H0 Z" fill="#fff"/></svg>
+    </header>
+    
+    <div class="container">
+        <!-- Add Clean Database button in the action bar/top bar -->
+        <div class="action-bar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
+            <div>
+                <a href="/" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Home
+                </a>
+            </div>
+            <div style="display:flex;align-items:center;gap:1rem;">
+                <a href="/export_receipts_excel" class="export-btn">
+                    <i class="fas fa-file-excel"></i>
+                    Export to Excel
+                </a>
+                <button class="btn clean-db-btn" id="clean-db-btn">
+                    <i class="fas fa-trash"></i> Clean Database
+                </button>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="file-list-container">
+                <div class="file-list-header">Receipt Files</div>
+                <div class="file-list">
+                    <ul id="file-list">
+                        {% for img in images %}
+                        <li data-filename="{{ img }}" class="{% if loop.first %}active{% endif %}">{{ img }}</li>
+                        {% else %}
+                        <li>No images found in receipts folder.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="content-container">
+                <div class="image-preview-container">
+                    <div class="preview-header">Receipt Image</div>
+                    <div class="image-preview">
+                        {% if images %}
+                        <img id="preview-image" src="{{ url_for('receipts_file', filename=images[0]) }}" alt="Receipt">
+                        <div class="image-info" id="image-info">{{ images[0] }}</div>
+                        <div class="image-actions">
+                            <button class="image-action-btn delete-btn" id="delete-image-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 6h18"></path>
+                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                                </svg>
+                                Delete
+                            </button>
+                            <button class="image-action-btn reprocess-btn" id="reprocess-image-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 2v6h-6"></path>
+                                    <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+                                    <path d="M3 22v-6h6"></path>
+                                    <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+                                </svg>
+                                Reprocess
+                            </button>
+                        </div>
+                        {% else %}
+                        <div class="no-selection">No receipt images available</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="data-container">
+                    <div class="extracted-data-container">
+                        <div class="extracted-header">Extracted Data</div>
+                        <div class="extracted-content">
+                            <div id="parsed-data">
+                                <div class="parsed-item">
+                                    <div class="parsed-label">Bill Number:</div>
+                                    <div class="parsed-value" id="bill-number">-</div>
+                                </div>
+                                <div class="parsed-item">
+                                    <div class="parsed-label">Total Amount:</div>
+                                    <div class="parsed-value" id="total-amount">-</div>
+                                </div>
+                                <div class="parsed-item">
+                                    <div class="parsed-label">Date/Time:</div>
+                                    <div class="parsed-value" id="date-time">-</div>
+                                </div>
+                                <div class="parsed-item">
+                                    <div class="parsed-label">Phone Number:</div>
+                                    <div class="parsed-value" id="phone-number">-</div>
+                                </div>
+                                <div class="parsed-item">
+                                    <div class="parsed-label">Parking Status:</div>
+                                    <div class="parsed-value" id="parking-status">-</div>
+                                </div>
+                                <div class="parsed-item">
+                                    <div class="parsed-label">Parking Offer Availed:</div>
+                                    <div class="parsed-value" id="parking-offer-availed">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ocr-section" id="ocr-section">
+                        <div class="ocr-header">
+                            <div>Raw OCR Text</div>
+                        </div>
+                        <div class="ocr-content">
+                            <div class="ocr-raw">
+                                <pre id="ocr-text">Processing image...</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="notification" id="newScreenshotNotification">
+            New screenshot added! 📸
+        </div>
+    </div>
+    
+    <!-- Add confirmation dialog -->
+    <div class="confirmation-dialog" id="delete-confirmation">
+        <div class="dialog-content">
+            <div class="dialog-title">Confirm Deletion</div>
+            <div class="dialog-message">Are you sure you want to delete this receipt image? This action cannot be undone.</div>
+            <div class="dialog-actions">
+                <button class="dialog-btn cancel-btn" id="cancel-delete">Cancel</button>
+                <button class="dialog-btn confirm-btn" id="confirm-delete">Delete</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Improved persistence mechanism for OCR results
+        const processedImages = new Set();
+        
+        // Create a more permanent cache using localStorage instead of sessionStorage
+        let ocrCache = {};
+        try {
+            const savedCache = localStorage.getItem('ocrCache');
+            if (savedCache) {
+                ocrCache = JSON.parse(savedCache);
+                console.log(`Loaded ${Object.keys(ocrCache).length} cached OCR results from storage`);
+            }
+        } catch (e) {
+            console.warn("Could not load OCR cache from localStorage:", e);
+            ocrCache = {};
+        }
+        
+        // More robust cache update function
+        function updateOcrCache(filename, data) {
+            ocrCache[filename] = data;
+            try {
+                localStorage.setItem('ocrCache', JSON.stringify(ocrCache));
+            } catch (e) {
+                console.warn("Could not save OCR cache to localStorage:", e);
+            }
+        }
+        
+        // Pre-mark all cached images as processed
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Initializing OCR system...");
+            
+            // Mark any cached images as processed
+            const cachedFilenames = Object.keys(ocrCache);
+            console.log(`Found ${cachedFilenames.length} previously processed images in cache`);
+            
+            cachedFilenames.forEach(filename => {
+                processedImages.add(filename);
+                markImageAsProcessed(filename);
+            });
+            
+            // Process the currently visible image only if not in cache
+            const activeItem = document.querySelector('#file-list li.active');
+            if (activeItem) {
+                const filename = activeItem.getAttribute('data-filename');
+                if (ocrCache[filename]) {
+                    console.log(`Using cached OCR data for ${filename}`);
+                    displayOcrResults(ocrCache[filename]);
+                } else {
+                    console.log(`Processing active image ${filename} for the first time`);
+                    processImage(filename);
+                }
+            }
+            
+            // Remove any automatic processing of all images on page load
+            // This ensures we only process when needed
+        });
+        
+        // File list click functionality - updated to avoid reprocessing
+        document.querySelectorAll('#file-list li[data-filename]').forEach(item => {
+            item.addEventListener('click', function() {
+                // Update active class
+                document.querySelectorAll('#file-list li').forEach(li => li.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Get the filename
+                const filename = this.getAttribute('data-filename');
+                
+                // Update preview image
+                const previewImage = document.getElementById('preview-image');
+                previewImage.src = `/receipts/${filename}`;
+                previewImage.alt = filename;
+                
+                // Update image info
+                document.getElementById('image-info').textContent = filename;
+                
+                // Check if this image is in our cache
+                if (ocrCache[filename]) {
+                    console.log(`Using cached OCR data for ${filename}`);
+                    displayOcrResults(ocrCache[filename]);
+                } else {
+                    // Show processing status in OCR section
+                    document.getElementById('ocr-text').textContent = "Processing image...";
+                    document.getElementById('bill-number').textContent = "-";
+                    document.getElementById('total-amount').textContent = "-";
+                    document.getElementById('date-time').textContent = "-";
+                    document.getElementById('phone-number').textContent = "-";
+                    document.getElementById('parking-status').textContent = "-";
+                    
+                    // Process only if not already processed
+                    if (!processedImages.has(filename)) {
+                        console.log(`Processing ${filename} for the first time`);
+                        processImage(filename);
+                    }
+                }
+            });
+        });
+        
+        // Enhanced client-side extraction function with better support for Indian receipts
+        function extractDataFromRawText(text) {
+            if (!text) return {};
+            
+            console.log("Attempting comprehensive client-side extraction from raw text");
+            
+            const data = {
+                bill_number: null,
+                total_amount: null,
+                date_time: null,
+                phone_number: null
+            };
+            
+            // Better identification of Indian receipts
+            let receiptType = "unknown";
+            const textLower = text.toLowerCase();
+            if (textLower.includes("rs.") || textLower.includes("rs ") || 
+                text.includes("₹") || textLower.includes("cash rs") || 
+                textLower.includes("rupees") || textLower.includes("bellary") || 
+                textLower.includes("exultsoft")) {
+                receiptType = "indian";
+                console.log("Detected Indian receipt format");
+            } else if (textLower.includes("amazon")) {
+                receiptType = "amazon";
+            } else if (textLower.includes("walmart")) {
+                receiptType = "walmart";
+            } else if (textLower.includes("restaurant") || textLower.includes("café") || 
+                       textLower.includes("cafe") || textLower.includes("bar")) {
+                receiptType = "restaurant";
+            } else if (textLower.includes("invoice")) {
+                receiptType = "invoice";
+            }
+            
+            console.log(`Detected receipt type: ${receiptType}`);
+            
+            // COMPREHENSIVE BILL NUMBER PATTERNS
+            const billPatterns = [
+                // Add Indian receipt formats
+                /receipt\s*no\.?\s*:?\s*(\d+)/i,
+                /bill\s*no\.?\s*:?\s*(\d+)/i,
+                /inv(?:oice)?\s*no\.?\s*:?\s*(\d+)/i,
+                /t\.?id\.?\s*:?\s*([a-z0-9]+)/i,
+                /terminal\s*id\s*:?\s*([a-z0-9]+)/i,
+                // Generic invoice/receipt numbers
+                /(?:invoice|bill|receipt|order)(?:\s+(?:number|no|#|id|num)):?\s*([a-z0-9_\-]{5,})/i,
+                /(?:invoice|bill|receipt|order)(?:\s+(?:number|no|#|id|num))?:?\s*#?\s*([a-z0-9_\-]{5,})/i,
+                /(?:inv|rcpt|ord)(?:\s+(?:number|no|#|id|num)):?\s*([a-z0-9_\-]{5,})/i,
+                /(?:inv|rcpt|ord)(?:\s+(?:number|no|#|id|num))?:?\s*#?\s*([a-z0-9_\-]{5,})/i,
+                /#\s*([a-z0-9_\-]{5,})/i,
+                /no\.\s*([a-z0-9_\-]{5,})/i,
+                /no:?\s*([a-z0-9_\-]{5,})/i,
+                
+                // Amazon specific
+                /order\s*(?:number|#|no)?\s*(?:\:|\.|\-)?\s*([0-9]{3}\-[0-9]{7}\-[0-9]{7})/i,
+                /([0-9]{3}\-[0-9]{7}\-[0-9]{7})/i,  // Amazon order number format
+                /invoice\s*(?:number|#|no)?\s*(?:\:|\.|\-)?\s*([A-Z0-9]{3,}\-[0-9]{5})/i,
+                /([A-Z0-9]{3,}\-[0-9]{5})/i,  // Amazon invoice format
+                
+                // Walmart specific
+                /tc\s*#\s*([0-9]{4}\s*[0-9]{4}\s*[0-9]{4})/i,
+                /transaction\s*(?:#|no)\s*([0-9]{10,})/i,
+                /receipt\s*(?:#|no)\s*([0-9]{10,})/i,
+                
+                // Restaurant specific
+                /(?:check|ticket|table|order)\s*(?:#|no)?\s*:?\s*([0-9]{1,5})/i,
+                /(?:check|ticket|table|order)\s*(?:#|no)?\s*:?\s*([a-z][0-9]{1,4})/i,
+                
+                // Generic numeric patterns
+                /(?<!\w)([0-9]{6,})(?!\w)/i,  // Standalone 6+ digit number
+                /(?<!\w)([a-z][0-9]{5,})(?!\w)/i,  // Letter followed by 5+ digits
+                /(?<!\w)([0-9]{5,}[a-z])(?!\w)/i,  // 5+ digits followed by letter
+            ];
+            
+            // Patterns to ignore as bill numbers
+            const ignorePatterns = [
+                /[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{2,4}/,  // Date format
+                /[0-9]{1,2}\-[0-9]{1,2}\-[0-9]{2,4}/,  // Date format
+                /[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{2,4}/,  // Date format
+                /[0-9]{1,2}:[0-9]{1,2}/,  // Time format
+                /[0-9]+\.[0-9]{2}/,  // Price format
+            ];
+            
+            // ENHANCED AMOUNT PATTERNS FOR INDIAN RECEIPTS
+            const amountPatterns = [
+                // Simple cash amount patterns
+                /cash\s+rs\.?\s*(\d+(?:\.\d+)?)/i,
+                /rs\.?\s*(\d+(?:\.\d+)?)/i,
+                /₹\s*(\d+(?:\.\d+)?)/i,
+                /(?:amount|amt|total|tot)[\s:]*rs\.?\s*(\d+(?:\.\d+)?)/i,
+                // Add support for formats without decimal places
+                /cash\s+rs\.?\s*(\d+)(?!\d)/i,
+                /rs\.?\s*(\d+)(?!\d)/i,
+                /₹\s*(\d+)(?!\d)/i,
+                
+                // Generic total patterns
+                /(?:total|tot|sum|amount|amt)(?:\s+(?:paid|due|amount))?(?:\s*:|\s)\s*([$€£]?\s*[0-9,]+\.[0-9]{2})/i,
+                /(?:total|tot|sum|amount|amt)(?:\s+(?:paid|due|amount))?(?:\s*:|\s)\s*([$€£]?\s*[0-9,]+)/i,
+                /(?:grand|final|balance|net)\s+(?:total|amount|due)(?:\s*:|\s)\s*([$€£]?\s*[0-9,]+\.[0-9]{2})/i,
+                /(?:grand|final|balance|net)\s+(?:total|amount|due)(?:\s*:|\s)\s*([$€£]?\s*[0-9,]+)/i,
+                
+                // Receipt-specific patterns
+                /(?:bill|invoice)\s+(?:total|amount)(?:\s*:|\s)\s*([$€£]?\s*[0-9,]+\.[0-9]{2})/i,
+                /(?:bill|invoice)\s+(?:total|amount)(?:\s*:|\s)\s*([$€£]?\s*[0-9,]+)/i,
+                /(?:amount(?:\s+paid)?|payment)(?:\s*:|\s)\s*([$€£]?\s*[0-9,]+\.[0-9]{2})/i,
+                /(?:amount(?:\s+paid)?|payment)(?:\s*:|\s)\s*([$€£]?\s*[0-9,]+)/i,
+                
+                // Patterns with dollar sign
+                /(?<!\w)([$€£]\s*[0-9,]+\.[0-9]{2})(?!\w)/i,  // $XX.XX format
+                /(?<!\w)([$€£]\s*[0-9,]+)(?!\w)/i,  // $XX format
+                
+                // Amazon specific
+                /(?:order|payment)\s+(?:total|amount)(?:\s*:|\s)\s*([$€£]?\s*[0-9,]+\.[0-9]{2})/i,
+                /(?:order|payment)\s+(?:total|amount)(?:\s*:|\s)\s*([$€£]?\s*[0-9,]+)/i,
+                
+                // Fallback - just find any amount
+                /(?<!\w)(?:[$€£]\s*)?([0-9,]+\.[0-9]{2})(?!\w)/i,
+            ];
+            
+            // COMPREHENSIVE PHONE NUMBER PATTERNS
+            const phonePatterns = [
+                // US/North American format
+                /(?:phone|tel|telephone|mobile|contact|customer|whatsapp|fax|cell)(?:\s+(?:number|no|#|:))?\s*((?:\+?1[-\s\.]?)?(?:\(?[0-9]{3}\)?[-\s\.]?)[0-9]{3}[-\s\.][0-9]{4})/i,
+                /(?<!\w)(?:\+?1[-\s\.]?)?(?:\(?[0-9]{3}\)?[-\s\.]?)[0-9]{3}[-\s\.][0-9]{4}(?!\w)/i,
+                
+                // International format
+                /(?:phone|tel|telephone|mobile|contact|customer|whatsapp|fax|cell)(?:\s+(?:number|no|#|:))?\s*(\+[0-9]{1,3}[-\s\.]?[0-9]{1,14})/i,
+                /(?<!\w)\+[0-9]{1,3}[-\s\.]?[0-9]{1,14}(?!\w)/i,
+                
+                // Special formats
+                /(?:phone|tel|telephone|mobile|contact|customer|whatsapp|fax|cell)(?:\s+(?:number|no|#|:))?\s*([0-9]{3}[-\s\.][0-9]{3}[-\s\.][0-9]{4})/i,
+                /(?<!\w)[0-9]{3}[-\s\.][0-9]{3}[-\s\.][0-9]{4}(?!\w)/i,
+            ];
+            
+            // EXTRACT BILL NUMBER
+            let foundBillNumber = null;
+            
+            // First try receipt type specific patterns
+            if (receiptType === "amazon") {
+                // Try Amazon specific patterns first
+                for (let i = 7; i <= 10; i++) {
+                    const pattern = billPatterns[i];
+                    const match = text.match(pattern);
+                    if (match) {
+                        const candidate = match[1].trim();
+                        // Check if it's not a date, price, etc.
+                        if (!ignorePatterns.some(ignorePat => candidate.match(ignorePat))) {
+                            foundBillNumber = candidate;
+                            console.log(`Found Amazon bill number: ${foundBillNumber}`);
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // If no type-specific match, try general patterns
+            if (!foundBillNumber) {
+                for (const pattern of billPatterns) {
+                    const match = text.match(pattern);
+                    if (match) {
+                        const candidate = match[1].trim();
+                        // Check if it's not a date, price, etc.
+                        if (!ignorePatterns.some(ignorePat => candidate.match(ignorePat))) {
+                            foundBillNumber = candidate;
+                            console.log(`Found bill number: ${foundBillNumber}`);
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            if (foundBillNumber) {
+                data.bill_number = foundBillNumber;
+            }
+            
+            // EXTRACT TOTAL AMOUNT
+            let maxAmount = 0;
+            for (const pattern of amountPatterns) {
+                const matches = text.matchAll(new RegExp(pattern, 'gi'));
+                for (const match of Array.from(matches)) {
+                    try {
+                        const amountStr = match[1].replace(/,/g, '').trim();
+                        const amountValue = parseFloat(amountStr);
+                        
+                        // Find the largest amount for total
+                        if (amountValue > maxAmount) {
+                            maxAmount = amountValue;
+                            data.total_amount = amountValue;
+                            console.log(`Found total amount: Rs. ${data.total_amount}`);
+                            
+                            // Generate bill number if we have an amount but no bill number
+                            if (!data.bill_number && amountValue > 0) {
+                                data.bill_number = generateFallbackBillNumber(text, amountValue);
+                                console.log(`Generated bill number: ${data.bill_number}`);
+                            }
+                        }
+                    } catch (e) {
+                        // Skip if we can't parse the amount
+                    }
+                }
+            }
+            
+            // EXTRACT PHONE NUMBER
+            for (const pattern of phonePatterns) {
+                const match = text.match(pattern);
+                if (match) {
+                    let phoneNumber = match[1].trim();
+                    // Clean up the phone number
+                    phoneNumber = phoneNumber.replace(/[^\d\+]/g, '');
+                    // Format for consistency
+                    if (phoneNumber.startsWith('+')) {
+                        // International format
+                        data.phone_number = phoneNumber;
+                    } else if (phoneNumber.length === 10) {
+                        // US format without country code
+                        data.phone_number = `${phoneNumber.substring(0,3)}-${phoneNumber.substring(3,6)}-${phoneNumber.substring(6)}`;
+                    } else if (phoneNumber.length === 11 && phoneNumber.startsWith('1')) {
+                        // US format with country code
+                        data.phone_number = `+${phoneNumber.charAt(0)}-${phoneNumber.substring(1,4)}-${phoneNumber.substring(4,7)}-${phoneNumber.substring(7)}`;
+                    } else {
+                        data.phone_number = phoneNumber;
+                    }
+                    
+                    console.log(`Found phone number: ${data.phone_number}`);
+                    break;
+                }
+            }
+            
+            // Improved date extraction for the format in the image (13/06/2025)
+            const datePatterns = [
+                /(\d{1,2}[/-]\d{1,2}[/-]\d{2,4})/,
+                /(\d{4}[/-]\d{1,2}[/-]\d{1,2})/,
+                /date\s*:?\s*(\d{1,2}[/-]\d{1,2}[/-]\d{2,4})/i,
+            ];
+            
+            // Extract date with time
+            for (const pattern of datePatterns) {
+                const match = text.match(pattern);
+                if (match) {
+                    data.date_time = match[1];
+                    
+                    // Look for a time pattern near the date
+                    const timePattern = /\d{1,2}:\d{2}(?::\d{2})?(?:\s*[AP]M)?/;
+                    const timeMatch = text.match(timePattern);
+                    if (timeMatch) {
+                        data.date_time = `${data.date_time} ${timeMatch[0]}`;
+                    }
+                    
+                    console.log(`Found date/time: ${data.date_time}`);
+                    break;
+                }
+            }
+            
+            return data;
+        }
+
+        // Update display function to better handle Indian currency
+        function displayOcrResults(data) {
+            console.log("Displaying OCR results:", data);
+            
+            // Update OCR text
+            document.getElementById('ocr-text').textContent = data.raw_text || "No text could be extracted";
+            
+            // Check if we need client-side extraction
+            let needsExtraction = false;
+            
+            // Check if parsed data is missing key fields
+            if (!data.parsed) {
+                console.log("No parsed data, will try client-side extraction");
+                needsExtraction = true;
+                data.parsed = {};
+            } else if (!data.parsed.bill_number || !data.parsed.total_amount) {
+                console.log("Incomplete parsed data, will try to supplement with client-side extraction");
+                needsExtraction = true;
+            }
+            
+            // Try client-side extraction if needed
+            if (needsExtraction && data.raw_text) {
+                console.log("Running enhanced client-side extraction");
+                const extractedData = extractDataFromRawText(data.raw_text);
+                
+                // Use extracted data to fill in any missing fields
+                data.parsed.bill_number = data.parsed.bill_number || extractedData.bill_number;
+                data.parsed.total_amount = data.parsed.total_amount || extractedData.total_amount;
+                data.parsed.date_time = data.parsed.date_time || extractedData.date_time;
+                data.parsed.phone_number = data.parsed.phone_number || extractedData.phone_number;
+                
+                console.log("Updated parsed data:", data.parsed);
+            }
+            
+            // Ensure parsed data exists and is properly structured
+            if (!data.parsed) {
+                data.parsed = {};
+            }
+            
+            // Debug the data we're trying to display
+            console.log("Final data to display:", data.parsed);
+            
+            // Update parsed data display with careful handling of each field
+            const billNumber = data.parsed.bill_number || "-";
+            document.getElementById('bill-number').textContent = billNumber;
+            console.log("Set bill number:", billNumber);
+            
+            // Handle total amount with proper formatting for both $ and Rs.
+            let totalAmountText = "-";
+            if (data.parsed.total_amount) {
+                const rawText = data.raw_text ? data.raw_text.toLowerCase() : '';
+                const isIndianReceipt = rawText.includes('rs.') || rawText.includes('rs ') || 
+                                       rawText.includes('₹') || rawText.includes('bellary') || 
+                                       rawText.includes('cash rs') || rawText.includes('exultsoft');
+                
+                if (typeof data.parsed.total_amount === 'number') {
+                    totalAmountText = isIndianReceipt ? 
+                        `Rs. ${data.parsed.total_amount.toFixed(2)}` : 
+                        `$${data.parsed.total_amount.toFixed(2)}`;
+                } else {
+                    // Try to clean and parse the string value
+                    const cleanAmount = String(data.parsed.total_amount).replace(/[^\d.-]/g, '');
+                    const amountValue = parseFloat(cleanAmount);
+                    if (!isNaN(amountValue)) {
+                        totalAmountText = isIndianReceipt ? 
+                            `Rs. ${amountValue.toFixed(2)}` : 
+                            `$${amountValue.toFixed(2)}`;
+                    } else {
+                        totalAmountText = data.parsed.total_amount; // Use as-is if can't parse
+                    }
+                }
+            }
+            document.getElementById('total-amount').textContent = totalAmountText;
+            console.log("Set total amount:", totalAmountText);
+            
+            // Handle date/time
+            const dateTime = data.parsed.date_time || "-";
+            document.getElementById('date-time').textContent = dateTime;
+            console.log("Set date/time:", dateTime);
+            
+            // Handle phone number
+            const phoneNumber = data.parsed.phone_number || "-";
+            document.getElementById('phone-number').textContent = phoneNumber;
+            console.log("Set phone number:", phoneNumber);
+            
+            // Update parking status
+            updateParkingStatus(data.parsed);
+            
+            // Update parking offer availed
+            document.getElementById('parking-offer-availed').textContent = data.parking_offer_availed ? 'Availed' : 'Not Availed';
+        }
+        
+        // Function to update parking status based on amount
+        function updateParkingStatus(parsedData) {
+            const parkingStatus = document.getElementById('parking-status');
+            let amountValue = 0;
+            
+            // Extract amount value
+            if (parsedData.total_amount) {
+                if (typeof parsedData.total_amount === 'number') {
+                    amountValue = parsedData.total_amount;
+                } else {
+                    // Try to parse from string
+                    const cleanAmount = String(parsedData.total_amount).replace(/[^\d.-]/g, '');
+                    amountValue = parseFloat(cleanAmount) || 0;
+                }
+            }
+            
+            // Determine parking status
+            if (amountValue >= 100) {
+                parkingStatus.textContent = "Waived ✅";
+                parkingStatus.style.color = "#4CAF50";
+            } else {
+                parkingStatus.textContent = "Not Waived ❌";
+                parkingStatus.style.color = "#ef4444";
+            }
+            console.log("Set parking status based on amount:", amountValue);
+        }
+
+        // Function to process an image with OCR - only process once
+        function processImage(filename) {
+            // If already processed or in cache, don't do it again
+            if (processedImages.has(filename) || ocrCache[filename]) {
+                // If in cache but not marked as processed
+                if (ocrCache[filename]) {
+                    displayOcrResults(ocrCache[filename]);
+                    processedImages.add(filename);
+                    // Mark as processed in UI
+                    markImageAsProcessed(filename);
+                }
+                return;
+            }
+            
+            // Show processing indicator
+            const indicator = document.createElement('div');
+            indicator.className = 'processing-indicator';
+            indicator.innerHTML = `
+                <div class="processing-spinner"></div>
+                <div class="processing-text">Processing image: ${filename}</div>
+            `;
+            document.body.appendChild(indicator);
+            
+            // Show the indicator with a slight delay for transition effect
+            setTimeout(() => indicator.classList.add('show'), 10);
+            
+            // Make API request to process the image
+            fetch('/process_receipt_ocr', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ filename: filename })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Raw OCR processing result:", data);
+                
+                // Verify data structure - ensure parsed data exists with proper fields
+                if (!data.parsed) {
+                    data.parsed = {};
+                    console.warn("No parsed data received from server, creating empty object");
+                }
+                
+                // Try to extract data from raw text if server parsing failed
+                if (!data.parsed.bill_number && !data.parsed.total_amount && data.raw_text) {
+                    console.log("Server parsed data is empty, attempting client-side extraction");
+                    const extractedData = extractDataFromRawText(data.raw_text);
+                    data.parsed = { ...data.parsed, ...extractedData };
+                }
+                
+                // Mark as processed
+                processedImages.add(filename);
+                
+                // Store in cache - with complete parsed data
+                updateOcrCache(filename, data);
+                
+                // Mark as processed in UI
+                markImageAsProcessed(filename);
+                
+                // Display the OCR results
+                displayOcrResults(data);
+                
+                // Show OCR section
+                document.getElementById('ocr-section').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error processing image:', error);
+                document.getElementById('ocr-text').textContent = "Error processing image. Please try again.";
+            })
+            .finally(() => {
+                // Remove the processing indicator after a short delay
+                setTimeout(() => {
+                    indicator.classList.remove('show');
+                    setTimeout(() => indicator.remove(), 300);
+                }, 1000);
+            });
+        }
+        
+        // Helper function to mark an image as processed in the UI
+        function markImageAsProcessed(filename) {
+            const listItems = document.querySelectorAll('#file-list li');
+            listItems.forEach(item => {
+                if (item.getAttribute('data-filename') === filename && !item.classList.contains('processed')) {
+                    item.classList.add('processed');
+                }
+            });
+        }
+        
+        // Auto-refresh gallery - only process new images once
+        function refreshGallery() {
+            if (!autoRefreshEnabled) return;
+            
+            fetch('/receipts_folder_data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.images.length > lastImageCount) {
+                        // New images detected
+                        showNotification();
+                        
+                        // Get only the new images (ones added since last check)
+                        const newImages = data.images.slice(0, data.images.length - lastImageCount);
+                        console.log(`Detected ${newImages.length} new images`);
+                        
+                        // Add new images to the UI
+                        addNewImagesToUI(newImages);
+                        
+                        // Process ONLY truly new images that haven't been processed before
+                        newImages.forEach(img => {
+                            if (!processedImages.has(img) && !ocrCache[img]) {
+                                console.log(`Auto-processing new image: ${img}`);
+                                processImage(img);
+                            } else {
+                                console.log(`Skipping already processed image: ${img}`);
+                            }
+                        });
+                        
+                        // Update count
+                        lastImageCount = data.images.length;
+                    }
+                })
+                .catch(err => console.error('Error refreshing gallery:', err));
+        }
+          // Enhanced notification function with parameters
+        function showNotification(message = 'New screenshot processed!', type = 'info', duration = 3000) {
+            // Create notification element if it doesn't exist
+            let notification = document.getElementById('dynamicNotification');
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.id = 'dynamicNotification';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    max-width: 400px;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    font-family: 'Poppins', sans-serif;
+                    font-size: 14px;
+                    font-weight: 500;
+                    z-index: 10000;
+                    display: none;
+                    opacity: 0;
+                    transition: all 0.3s ease;
+                    white-space: pre-line;
+                    word-wrap: break-word;
+                `;
+                document.body.appendChild(notification);
+            }
+            
+            // Set notification style based on type
+            const styles = {
+                success: {
+                    backgroundColor: '#10b981',
+                    color: 'white',
+                    border: '1px solid #059669'
+                },
+                error: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: '1px solid #dc2626'
+                },
+                warning: {
+                    backgroundColor: '#f59e0b',
+                    color: 'white',
+                    border: '1px solid #d97706'
+                },
+                info: {
+                    backgroundColor: '#3b82f6',
+                    color: 'white',
+                    border: '1px solid #2563eb'
+                }
+            };
+            
+            const style = styles[type] || styles.info;
+            Object.assign(notification.style, style);
+            
+            // Set message and show
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.opacity = '1';
+            }, 10);
+            
+            // Hide after duration
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 300);
+            }, duration);
+        }
+        
+        // Legacy notification function for backward compatibility
+        function showLegacyNotification() {
+            const notification = document.getElementById('newScreenshotNotification');
+            if (notification) {
+                notification.style.display = 'block';
+                notification.style.opacity = '1';
+                
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    setTimeout(() => {
+                        notification.style.display = 'none';
+                    }, 500);
+                }, 3000);
+            }
+        }
+        
+        // Helper function to add new images to the UI
+        function addNewImagesToUI(newImages) {
+            const fileList = document.getElementById('file-list');
+            const currentActive = document.querySelector('#file-list li.active');
+            let activeFilename = currentActive ? currentActive.getAttribute('data-filename') : null;
+            
+            // Add each new image to the UI
+            for (let i = 0; i < newImages.length; i++) {
+                const img = newImages[i];
+                
+                // Create list item
+                const listItem = document.createElement('li');
+                listItem.setAttribute('data-filename', img);
+                listItem.textContent = img;
+                
+                // Add click event
+                listItem.addEventListener('click', function() {
+                    document.querySelectorAll('#file-list li').forEach(li => li.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const filename = this.getAttribute('data-filename');
+                    const previewImage = document.getElementById('preview-image');
+                    previewImage.src = `/receipts/${filename}`;
+                    previewImage.alt = filename;
+                    document.getElementById('image-info').textContent = filename;
+                    
+                    // Display cached OCR results if available
+                    if (ocrCache[filename]) {
+                        displayOcrResults(ocrCache[filename]);
+                    } else if (!processedImages.has(filename)) {
+                        processImage(filename);
+                    }
+                });
+                
+                // Add to the beginning of the list
+                if (fileList.querySelector('li:not([data-filename])')) {
+                    // Replace "No images found" message with the new image
+                    fileList.innerHTML = '';
+                    fileList.appendChild(listItem);
+                } else {
+                    // Add new item to the beginning of the list
+                    fileList.insertBefore(listItem, fileList.firstChild);
+                }
+                
+                // If it's the first image and no other image is active, activate it
+                if (i === 0 && !activeFilename) {
+                    listItem.classList.add('active');
+                    activeFilename = img;
+                    
+                    // Update the preview
+                    const imagePreview = document.querySelector('.image-preview');
+                    imagePreview.innerHTML = `
+                        <img id="preview-image" src="/receipts/${img}" alt="${img}">
+                        <div class="image-info" id="image-info">${img}</div>
+                    `;
+                }
+            }
+        }
+        
+        let lastImageCount = "{{ images|length }}";
+        let refreshInterval;
+        let autoRefreshEnabled = true;
+        
+        // Start auto-refresh
+        refreshInterval = setInterval(refreshGallery, 2000); // Check every 2 seconds
+        
+        // Add functionality for delete and reprocess buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup delete and reprocess buttons
+            setupImageActionButtons();
+        });
+        
+        // Function to setup image action buttons
+        function setupImageActionButtons() {
+            const deleteBtn = document.getElementById('delete-image-btn');
+            const reprocessBtn = document.getElementById('reprocess-image-btn');
+            const deleteConfirmation = document.getElementById('delete-confirmation');
+            const cancelDelete = document.getElementById('cancel-delete');
+            const confirmDelete = document.getElementById('confirm-delete');
+            
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', function() {
+                    // Show confirmation dialog
+                    deleteConfirmation.classList.add('show');
+                });
+            }
+            
+            if (cancelDelete) {
+                cancelDelete.addEventListener('click', function() {
+                    // Hide confirmation dialog
+                    deleteConfirmation.classList.remove('show');
+                });
+            }
+            
+            if (confirmDelete) {
+                confirmDelete.addEventListener('click', function() {
+                    // Get current active file
+                    const activeItem = document.querySelector('#file-list li.active');
+                    if (activeItem) {
+                        const filename = activeItem.getAttribute('data-filename');
+                        deleteReceipt(filename);
+                    }
+                    // Hide confirmation dialog
+                    deleteConfirmation.classList.remove('show');
+                });
+            }
+            
+            if (reprocessBtn) {
+                reprocessBtn.addEventListener('click', function() {
+                    // Get current active file
+                    const activeItem = document.querySelector('#file-list li.active');
+                    if (activeItem) {
+                        const filename = activeItem.getAttribute('data-filename');
+                        reprocessReceipt(filename);
+                    }
+                });
+            }
+        }
+        
+        // Function to delete a receipt
+        function deleteReceipt(filename) {
+            // Show processing indicator
+            const indicator = document.createElement('div');
+            indicator.className = 'processing-indicator';
+            indicator.innerHTML = `
+                <div class="processing-spinner"></div>
+                <div class="processing-text">Deleting image: ${filename}</div>
+            `;
+            document.body.appendChild(indicator);
+            setTimeout(() => indicator.classList.add('show'), 10);
+            
+            // Make API request to delete the file
+            fetch('/delete_receipt', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ filename: filename })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })            .then(data => {
+                console.log("Receipt deleted:", data);
+                
+                // Show detailed deletion feedback
+                let message = `✅ Receipt ${filename} deleted successfully`;
+                if (data.records_deleted > 0) {
+                    message += `\n📊 Database records deleted: ${data.records_deleted}`;
+                    if (data.deleted_records && data.deleted_records.length > 0) {
+                        message += '\n\nDeleted records:';
+                        data.deleted_records.forEach(record => {
+                            message += `\n• Bill: ${record.bill_number || 'N/A'} | Amount: $${record.total_amount || 0} | Store: ${record.store_name || 'N/A'}`;
+                        });
+                    }
+                } else {
+                    message += '\n⚠️ No database records found for this file';
+                }
+                
+                // Show success notification with detailed info
+                showNotification(message, 'success', 5000);
+                
+                // Remove from cache
+                if (ocrCache[filename]) {
+                    delete ocrCache[filename];
+                    localStorage.setItem('ocrCache', JSON.stringify(ocrCache));
+                }
+                
+                // Remove from processed set
+                processedImages.delete(filename);
+                
+                // Remove from UI
+                const listItem = document.querySelector(`#file-list li[data-filename="${filename}"]`);
+                if (listItem) {
+                    // If this was the active item, select another one
+                    if (listItem.classList.contains('active')) {
+                        const nextItem = listItem.nextElementSibling || listItem.previousElementSibling;
+                        listItem.remove();
+                        
+                        if (nextItem) {
+                            nextItem.classList.add('active');
+                            const nextFilename = nextItem.getAttribute('data-filename');
+                            
+                            // Update preview
+                            const previewImage = document.getElementById('preview-image');
+                            previewImage.src = `/receipts/${nextFilename}`;
+                            previewImage.alt = nextFilename;
+                            document.getElementById('image-info').textContent = nextFilename;
+                            
+                            // Update OCR data
+                            if (ocrCache[nextFilename]) {
+                                displayOcrResults(ocrCache[nextFilename]);
+                            } else if (!processedImages.has(nextFilename)) {
+                                processImage(nextFilename);
+                            }
+                        } else {
+                            // No more images
+                            const imagePreview = document.querySelector('.image-preview');
+                            imagePreview.innerHTML = '<div class="no-selection">No receipt images available</div>';
+                            
+                            // Clear OCR data
+                            document.getElementById('ocr-text').textContent = "";
+                            document.getElementById('bill-number').textContent = "-";
+                            document.getElementById('total-amount').textContent = "-";
+                            document.getElementById('date-time').textContent = "-";
+                            document.getElementById('phone-number').textContent = "-";
+                            document.getElementById('parking-status').textContent = "-";
+                        }
+                    } else {
+                        listItem.remove();
+                    }
+                }
+            })            .catch(error => {
+                console.error('Error deleting receipt:', error);
+                showNotification(`❌ Error deleting receipt: ${error.message || 'Unknown error'}`, 'error', 5000);
+            })
+            .finally(() => {
+                // Remove indicator
+                setTimeout(() => {
+                    indicator.classList.remove('show');
+                    setTimeout(() => indicator.remove(), 300);
+                }, 1000);
+            });
+        }
+        
+        // Function to reprocess a receipt
+        function reprocessReceipt(filename) {
+            // Remove from cache
+            if (ocrCache[filename]) {
+                delete ocrCache[filename];
+                localStorage.setItem('ocrCache', JSON.stringify(ocrCache));
+            }
+            
+            // Remove from processed set
+            processedImages.delete(filename);
+            
+            // Remove processed indicator in UI
+            const listItem = document.querySelector(`#file-list li[data-filename="${filename}"]`);
+            if (listItem) {
+                listItem.classList.remove('processed');
+            }
+            
+            // Reset OCR display
+            document.getElementById('ocr-text').textContent = "Processing image...";
+            document.getElementById('bill-number').textContent = "-";
+            document.getElementById('total-amount').textContent = "-";
+            document.getElementById('date-time').textContent = "-";
+            document.getElementById('phone-number').textContent = "-";
+            document.getElementById('parking-status').textContent = "-";
+            
+            // Process the image again
+            processImage(filename);
+        }
+        
+        document.getElementById('clean-db-btn').addEventListener('click', function() {
+            if (!confirm('Are you sure you want to clean (delete all) receipts data? This cannot be undone!')) return;
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cleaning...';
+            fetch('/clean_receipts_db', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Receipts database cleaned successfully!');
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(() => alert('Error cleaning database.'))
+                .finally(() => {
+                    this.disabled = false;
+                    this.innerHTML = '<i class="fas fa-trash"></i> Clean Database';
+                });
+        });
+    </script>
+</body>
+</html>

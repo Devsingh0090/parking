@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combined Receipt Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            color: #1e293b;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(120deg, #6366f1 0%, #818cf8 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+        .content {
+            padding: 2rem;
+        }
+        .bill-info {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid #6366f1;
+        }
+        .bill-info h3 {
+            margin: 0 0 1rem 0;
+            color: #374151;
+            font-size: 1.25rem;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .info-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        .info-value {
+            font-weight: 600;
+            color: #374151;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        .status-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .status-error {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        .files-section {
+            margin-top: 2rem;
+        }
+        .files-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .file-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        .file-name {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            word-break: break-all;
+        }
+        .file-type {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+        .raw-text {
+            max-height: 100px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 0.5rem;
+            font-size: 0.75rem;
+            font-family: monospace;
+            color: #4b5563;
+        }
+        .actions {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #6366f1;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            margin: 0 0.5rem;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: #4f46e5;
+        }
+        .btn-secondary {
+            background: #64748b;
+        }
+        .btn-secondary:hover {
+            background: #475569;
+        }
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Combined Receipt Details</h1>
+        </div>
+        <div class="content">
+            <div id="loading" class="loading">
+                <div>Loading receipt details...</div>
+            </div>
+            <div id="content" style="display: none;">
+                <!-- Content will be loaded here -->
+            </div>
+            <div id="error" style="display: none;" class="error-message">
+                <!-- Error will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get bill number from URL
+        const pathParts = window.location.pathname.split('/');
+        const billNumber = pathParts[pathParts.length - 1];
+
+        async function loadReceiptDetails() {
+            try {
+                const response = await fetch(`/view_combined_receipt/${billNumber}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    displayReceipt(data.receipt);
+                } else {
+                    showError(data.error || 'Failed to load receipt details');
+                }
+            } catch (error) {
+                console.error('Error loading receipt:', error);
+                showError('Network error. Please try again.');
+            }
+        }
+
+        function displayReceipt(receipt) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <div class="bill-info">
+                    <h3>📄 Bill Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Bill Number</div>
+                            <div class="info-value" style="font-family: monospace;">${receipt.bill_number}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Total Amount</div>
+                            <div class="info-value">₹${receipt.total_amount.toFixed(2)}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Date & Time</div>
+                            <div class="info-value">${receipt.date_time || 'N/A'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Store/Service</div>
+                            <div class="info-value">${receipt.store_name || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Parking Status</div>
+                        <div class="status-badge ${receipt.parking_fee_waived ? 'status-success' : 'status-error'}">
+                            ${receipt.parking_fee_waived ? '✅ Parking Fee Waived' : '❌ Parking Fee Required'}
+                        </div>
+                    </div>
+                    ${receipt.parking_validation_date ? `
+                        <div style="margin-top: 1rem;">
+                            <div class="info-label">Validation Date</div>
+                            <div class="info-value">${receipt.parking_validation_date}</div>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div class="bill-info">
+                    <h3>🏪 Merchant Information</h3>
+                    <div class="info-value">${receipt.merchant_info || 'No merchant information available'}</div>
+                </div>
+
+                ${receipt.filenames && receipt.filenames.length > 0 ? `
+                    <div class="files-section">
+                        <h3>📎 Uploaded Files</h3>
+                        <div class="files-grid">
+                            ${receipt.filenames.map((filename, index) => `
+                                <div class="file-card">
+                                    <div class="file-name">${filename}</div>
+                                    <div class="file-type">
+                                        ${filename.includes('shopping') ? '🛒 Shopping Bill' : '🅿️ Parking Bill'}
+                                    </div>
+                                    ${receipt.raw_texts && receipt.raw_texts[index] ? `
+                                        <div class="raw-text">${receipt.raw_texts[index].substring(0, 200)}${receipt.raw_texts[index].length > 200 ? '...' : ''}</div>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                <div class="actions">
+                    <a href="/parking_validation" class="btn">🔙 Back to Validation</a>
+                    <a href="/receipts_folder" class="btn btn-secondary">📁 View Gallery</a>
+                    <a href="/receipts" class="btn btn-secondary">📊 View Database</a>
+                </div>
+            `;
+        }
+
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error').innerHTML = `
+                <div style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;">❌ Error</div>
+                <div>${message}</div>
+                <div style="margin-top: 1rem;">
+                    <a href="/parking_validation" class="btn">🔙 Back to Validation</a>
+                </div>
+            `;
+        }
+
+        // Load receipt details when page loads
+        window.addEventListener('DOMContentLoaded', loadReceiptDetails);
+    </script>
+</body>
+</html>

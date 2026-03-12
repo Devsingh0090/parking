@@ -1,0 +1,3062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt Records - Smart Mall Parking</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%234f46e5;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23818cf8;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='20' fill='url(%23grad)'/%3E%3Ctext x='50' y='70' font-family='Orbitron,sans-serif' font-size='60' font-weight='700' text-anchor='middle' fill='white'%3EE%3C/text%3E%3C/svg%3E">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --secondary-light: #34d399;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --surface: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --gradient-secondary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            color: var(--gray-900);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Modern Header with Glassmorphism */
+        .header {
+            background: linear-gradient(120deg, #6366f1 0%, #818cf8 60%, #10b981 100%);
+            color: #fff;
+            padding: 2.2rem 0 2rem 0;
+            box-shadow: 0 6px 24px rgba(99,102,241,0.13);
+            margin-bottom: 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header-wave {
+            position: absolute;
+            left: 0; bottom: 0; width: 100%; height: 60px;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .header-glow {
+            display: block;
+            margin: 0 auto;
+            width: 180px;
+            height: 24px;
+            background: radial-gradient(ellipse at center, #818cf8 0%, rgba(129,140,248,0.0) 80%);
+            filter: blur(12px);
+            opacity: 0.7;
+            position: relative;
+            top: -18px;
+            z-index: 2;
+        }
+        .header-dot-cluster {
+            position: absolute;
+            top: 18px;
+            right: 32px;
+            z-index: 3;
+            display: flex;
+            gap: 8px;
+            animation: floatDots 3.5s ease-in-out infinite alternate;
+        }
+        .header-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #818cf8, #10b981);
+            opacity: 0.7;
+            animation: pulseDot 2s infinite alternate;
+        }
+        .header-dot:nth-child(2) { width: 7px; height: 7px; opacity: 0.5; animation-delay: 0.7s; }
+        .header-dot:nth-child(3) { width: 13px; height: 13px; opacity: 0.6; animation-delay: 1.2s; }
+        @keyframes floatDots {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-12px); }
+        }
+        @keyframes pulseDot {
+            0% { filter: blur(0px); }
+            100% { filter: blur(2px); }
+        }
+        .header-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.7rem;
+            font-weight: 900;
+            margin: 0;
+            color: #fff;
+            letter-spacing: 0.01em;
+            text-shadow: 0 2px 16px rgba(79,70,229,0.18), 0 1px 0 #3730a3;
+            animation: fadeDown 1s cubic-bezier(.77,0,.18,1) 0.1s both;
+        }
+        .header-subtitle {
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: #e0e7ff;
+            margin-top: 0.7rem;
+            margin-bottom: 0.2rem;
+            letter-spacing: 0.01em;
+            text-shadow: 0 1px 8px rgba(79,70,229,0.13);
+            animation: fadeDown 1.1s cubic-bezier(.77,0,.18,1) 0.3s both;
+        }
+        @keyframes fadeDown {
+            0% { opacity: 0; transform: translateY(-30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.5rem;
+                padding: 0 0.5rem;
+            }
+            .header {
+                padding: 1.2rem 0 1.2rem 0;
+            }
+            .header-glow { width: 100px; height: 16px; top: -10px; }
+            .header-dot-cluster { right: 10px; top: 10px; }
+            
+            .receipt-tabs {
+                gap: 0.25rem;
+                padding-bottom: 0.25rem;
+            }
+            
+            .receipt-tab {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.875rem;
+            }
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            width: 100%;        }
+        
+        /* Dashboard Tabs */
+        .dashboard-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            padding: 0.5rem;
+            background: var(--gray-50);
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+            overflow-x: auto;
+        }
+        
+        .tab-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            position: relative;
+        }
+        
+        .tab-button:hover {
+            background: var(--surface);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+        
+        .tab-button.active {
+            background: var(--surface);
+            color: var(--primary);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .tab-button.active::before {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0.5rem;
+            height: 0.5rem;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+        
+        .dashboard-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .dashboard-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Dashboard Statistics Section */
+        .dashboard-section {
+            margin-bottom: 2rem;
+            padding: 0 1.5rem;
+        }
+        
+        .dashboard-title {
+            color: var(--gray-800);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .dashboard-title i {
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--gray-300);
+        }
+        
+        .stat-card.total-bills::before {
+            background: var(--gradient-primary);
+        }
+        
+        .stat-card.free-parking::before {
+            background: var(--gradient-secondary);
+        }
+        
+        .stat-card.charged-parking::before {
+            background: var(--gradient-danger);
+        }
+        
+        .stat-card.no-vehicles::before {
+            background: linear-gradient(135deg, var(--warning) 0%, #f59e0b 100%);
+        }
+        
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-title {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .stat-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+        }
+        
+        .stat-icon.total-bills {
+            background: var(--gradient-primary);
+        }
+        
+        .stat-icon.free-parking {
+            background: var(--gradient-secondary);
+        }
+        
+        .stat-icon.charged-parking {
+            background: var(--gradient-danger);
+        }
+        
+        .stat-icon.no-vehicles {
+            background: linear-gradient(135deg, var(--warning) 0%, #f59e0b 100%);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-description {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+        
+        .stat-percentage {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            margin-top: 0.5rem;
+        }
+        
+        .stat-percentage.positive {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .stat-percentage.negative {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .loading-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 140px;
+        }
+        
+        .loading-card .spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid var(--gray-200);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Action Bar */
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 2rem;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .back-link { 
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-600);
+            text-decoration: none; 
+            font-weight: 500;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            border: 1px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+        
+        .back-link:hover { 
+            color: var(--primary);
+            background: var(--surface);
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .export-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--gradient-secondary);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow);
+            border: none;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        /* Enhanced Search Box */
+        .search-container {
+            position: relative;
+            flex: 1;
+            min-width: 300px;
+            max-width: 400px;
+        }
+        
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.925rem;
+            font-weight: 400;
+            background: var(--surface);
+            transition: all 0.2s ease;
+            color: var(--gray-700);
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102,241, 0.1);
+            background: var(--surface);
+        }
+        
+        .search-box input::placeholder {
+            color: var(--gray-400);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            font-size: 1rem;
+            pointer-events: none;
+        }
+        
+        /* Modern Card-based Table */
+        .table-card {
+            background: var(--surface);
+            border-radius: 20px;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            border: 1px solid var(--gray-100);
+            animation: slideUp 0.6s ease;
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        
+        .table-header {
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .table-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 0.25rem;
+        }
+        
+        .table-subtitle {
+            color: var(--gray-500);
+            font-size: 0.875rem;
+        }
+        
+        .table-container {
+            overflow: hidden;
+        }        
+        .responsive-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .responsive-table th,
+        .responsive-table td {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-100);
+            vertical-align: middle;
+        }
+        
+        .responsive-table th {
+            background: var(--gray-50);
+            color: var(--gray-700);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .responsive-table th:first-child {
+            border-top-left-radius: 0;
+        }
+        
+        .responsive-table th:last-child {
+            border-top-right-radius: 0;
+        }
+        
+        .responsive-table tbody tr {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .responsive-table tbody tr:hover {
+            background: linear-gradient(135deg, var(--gray-50) 0%, rgba(99, 102, 241, 0.02) 100%);
+            transform: scale(1.001);
+        }
+        
+        .responsive-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Tab styling */
+        .receipt-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            padding-bottom: 0.5rem;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .receipt-tab {
+            background: none;
+            border: none;
+            color: var(--gray-600);
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .receipt-tab:hover {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .receipt-tab.active {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+            position: relative;
+        }
+        
+        .receipt-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: 3px 3px 0 0;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Enhanced Cell Styles */
+        .id-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
+            color: var(--gray-600);
+            font-weight: 700;
+            font-size: 0.875rem;
+            border-radius: 12px;
+            border: 2px solid var(--gray-200);
+        }
+        
+        .bill-number {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-weight: 600;
+            color: var(--gray-800);
+            background: var(--gray-50);
+            padding: 0.375rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .amount {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--gray-800);
+        }
+        
+        .amount::before {
+            content: 'Rs ';
+            color: var(--gray-500);
+            font-weight: 500;
+            margin-right: 0.125rem;
+        }
+        
+        .date-time {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            white-space: nowrap;
+        }
+        
+        .phone-number {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            background: var(--gray-50);
+            padding: 0.375rem 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+        }
+        
+        .processed-at {
+            font-size: 0.8125rem;
+            color: var(--gray-500);
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            letter-spacing: 0.025em;
+            text-transform: uppercase;
+        }
+        
+        /* Badge styles for different states */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1;
+        }
+        
+        .badge-primary {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 0.35rem 0.65rem;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
+        }
+        
+        .badge-success {
+            background: linear-gradient(135deg, var(--success) 0%, var(--secondary-light) 100%);
+            color: white;
+        }
+        
+        .badge-secondary {
+            background: linear-gradient(135deg, var(--gray-600) 0%, var(--gray-500) 100%);
+            color: white;
+        }
+        
+        .badge-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+            color: white;
+        }
+        
+        .status-waived {
+            background: linear-gradient(135deg, var(--success) 0%, var(--secondary-light) 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+          .status-not-waived {
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+        
+        .status-paid-parking {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+        }
+        
+        .status-icon {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .status-icon::before {
+            content: '✓';
+            font-size: 0.75rem;
+            font-weight: 900;
+        }
+          .status-not-waived .status-icon::before {
+            content: '✕';
+        }
+        
+        .status-paid-parking .status-icon::before {
+            content: '🅿️';
+            font-size: 0.6rem;
+        }
+        
+        /* Modern Pagination */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 2rem;
+            gap: 0.5rem;
+        }
+        
+        .pagination-info {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            margin-right: 1rem;
+        }
+        
+        .pagination {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .pagination button {
+            padding: 0.75rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            font-weight: 500;
+            color: var(--gray-700);
+            min-width: 2.75rem;
+        }
+        
+        .pagination button:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+            transform: translateY(-1px);
+        }
+        
+        .pagination button.active {
+            background: var(--gradient-primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray-500);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--gray-300);
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: var(--gray-600);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        
+        .spinner {
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid var(--gray-200);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+            /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-content {
+                padding: 1.5rem 1rem;
+            }
+            
+            .dashboard-section {
+                padding: 0 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+            
+            .search-container {
+                max-width: none;
+            }
+            
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .responsive-table {
+                min-width: 800px;
+            }
+            
+            .responsive-table th,
+            .responsive-table td {
+                padding: 0.75rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            }
+            
+            .stat-value {
+                font-size: 2rem;
+            }
+        }
+          @media (max-width: 768px) {
+            .header-content {
+                padding: 1.5rem 1rem;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+                padding: 0 0.5rem;
+            }
+            
+            .main-content {
+                padding: 1rem 0.75rem;
+            }
+            
+            .dashboard-section {
+                padding: 0 0.75rem;
+            }
+            
+            .dashboard-tabs {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+            
+            .tab-button {
+                justify-content: center;
+                padding: 1rem;
+            }
+            
+            .action-bar {
+                padding: 1rem;
+            }
+            
+            .responsive-table th,
+            .responsive-table td {
+                padding: 0.625rem 0.75rem;
+                font-size: 0.875rem;
+            }
+            
+            .amount {
+                font-size: 1rem;
+            }
+            
+            .status-badge {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.8125rem;
+            }
+            
+            .pagination-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .stat-card {
+                padding: 1.25rem;
+            }
+            
+            .stat-value {
+                font-size: 1.75rem;
+            }
+            
+            .dashboard-title {
+                font-size: 1.25rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .responsive-table {
+                min-width: 600px;
+            }
+            
+            .bill-number,
+            .phone-number {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.8125rem;
+            }
+            
+            .id-badge {
+                width: 2rem;
+                height: 2rem;
+                font-size: 0.8125rem;
+            }
+        }
+        
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Focus Styles */
+        *:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+        
+        /* Print Styles */
+        @media print {
+            .action-bar,
+            .pagination-container {
+                display: none;
+            }
+            
+            .table-card {
+                box-shadow: none;
+                border: 1px solid var(--gray-300);
+            }
+              .header {
+                background: var(--gray-800) !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+        
+        .btn.clean-db-btn {
+            background: #fff0f0;
+            color: #ef4444;
+            border: 1.5px solid #ef4444;
+            margin-left: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 0.75rem 2rem;
+            transition: background 0.2s, color 0.2s, border 0.2s;
+            box-shadow: 0 1px 2px 0 rgb(239 68 68 / 0.05);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn.clean-db-btn:hover, .btn.clean-db-btn:focus {
+            background: #ef4444;
+            color: #fff;
+            border-color: #ef4444;
+        }
+        .background-svg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.35;
+        }
+        .animated-gradient {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            background: linear-gradient(120deg, #6366f1 0%, #818cf8 50%, #10b981 100%);
+            opacity: 0.18;
+            animation: gradientMove 8s ease-in-out infinite alternate;
+        }
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        .sparkle {
+            position: absolute;
+            border-radius: 50%;
+            background: #fff;
+            opacity: 0.7;
+            pointer-events: none;
+            animation: sparkleMove 6s linear infinite;
+        }
+        @keyframes sparkleMove {
+            0% { transform: translateY(0) scale(1); opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-60px) scale(1.2); opacity: 0; }
+        }
+        .wave-divider {
+            display: block;
+            width: 100%;
+            height: 60px;
+            margin-bottom: -2.5rem;
+        }
+        .main-content, .table-card, .action-bar, .dashboard-section {
+            position: relative;
+            z-index: 1;
+        }
+        .table-card, .action-bar, .dashboard-section {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(99,102,241,0.10);
+            animation: fadeInUp 0.8s;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .table-card:hover, .action-bar:hover, .dashboard-section:hover {
+            box-shadow: 0 16px 40px rgba(99,102,241,0.18);
+            transform: translateY(-2px) scale(1.01);
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+        .btn, .export-btn, .clean-db-btn {
+            transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+        }
+        .btn:hover, .export-btn:hover, .clean-db-btn:hover {
+            box-shadow: 0 4px 16px rgba(99,102,241,0.18);
+            transform: translateY(-2px) scale(1.04);
+        }
+        .call-to-action {
+            background: linear-gradient(90deg, #818cf8 0%, #4f46e5 100%);
+            color: #fff;
+            text-align: center;
+            padding: 1.2rem 0.5rem;
+            font-size: 1.15rem;
+            font-weight: 600;
+            border-radius: 16px;
+            margin: 2rem auto 1rem auto;
+            max-width: 600px;
+            box-shadow: 0 4px 16px rgba(99,102,241,0.10);
+            animation: fadeInUp 1.2s;
+        }
+        .parking-offer-availed .stat-icon {
+            background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+        }
+        .parking-offer-availed {
+            border-color: #2563eb;
+        }
+        .parking-offer-not-availed .stat-icon {
+            background: linear-gradient(135deg, #f59e42 0%, #fbbf24 100%);
+        }
+        .parking-offer-not-availed {
+            border-color: #f59e42;
+        }
+        .paid-parking-amount .stat-icon {
+            background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+            color: #fff;
+        }
+        .paid-parking-amount {
+            border-color: #7c3aed;
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-gradient"></div>
+    <svg class="background-svg" viewBox="0 0 1440 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="200" cy="200" r="120" fill="#4f46e5" fill-opacity="0.22"/>
+        <rect x="1100" y="100" width="220" height="220" rx="60" fill="#3730a3" fill-opacity="0.18"/>
+        <ellipse cx="900" cy="700" rx="140" ry="80" fill="#f59e0b" fill-opacity="0.18"/>
+        <circle cx="300" cy="800" r="90" fill="#10b981" fill-opacity="0.18"/>
+        <rect x="700" y="400" width="120" height="120" rx="30" fill="#ef4444" fill-opacity="0.15"/>
+    </svg>
+    <div class="sparkle" style="top:10%;left:20%;width:8px;height:8px;animation-delay:0s;"></div>
+    <div class="sparkle" style="top:30%;left:70%;width:12px;height:12px;animation-delay:1.2s;"></div>
+    <div class="sparkle" style="top:60%;left:40%;width:10px;height:10px;animation-delay:2.4s;"></div>
+    <div class="sparkle" style="top:80%;left:80%;width:7px;height:7px;animation-delay:3.6s;"></div>
+    <div class="sparkle" style="top:50%;left:10%;width:9px;height:9px;animation-delay:4.8s;"></div>
+    <div class="page-container">
+        <header class="header">
+            <div class="header-content">
+                <h1>Receipt Records</h1>
+                <div class="header-glow"></div>
+                <div class="header-subtitle">Smart Mall Parking System</div>
+            </div>
+            <div class="header-dot-cluster">
+                <div class="header-dot"></div>
+                <div class="header-dot"></div>
+                <div class="header-dot"></div>
+            </div>
+            <svg class="header-wave" viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,30 Q360,60 720,30 T1440,30 V60 H0 Z" fill="#fff"/></svg>
+        </header>
+        <svg class="wave-divider" viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,30 Q360,60 720,30 T1440,30 V60 H0 Z" fill="#fff"/></svg>
+        <main class="main-content">            <!-- Dashboard Tabs Section -->
+            <div class="dashboard-section">
+                <h2 class="dashboard-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Dashboard Overview
+                </h2>
+                
+                <!-- Dashboard Tabs -->
+                <div class="dashboard-tabs">
+                    <button class="tab-button active" onclick="showDashboard('overview')" id="overviewTab">
+                        <i class="fas fa-chart-pie"></i>
+                        Overall Statistics
+                    </button>
+                    <button class="tab-button" onclick="showDashboard('shopping')" id="shoppingTab">
+                        <i class="fas fa-shopping-bag"></i>
+                        Shopping Bills
+                    </button>
+                    <button class="tab-button" onclick="showDashboard('parking')" id="parkingTab">
+                        <i class="fas fa-parking"></i>
+                        Parking Bills
+                    </button>
+                </div>
+                
+                <!-- Overview Dashboard -->
+                <div class="dashboard-content active" id="overviewDashboard">
+                    <div class="stats-grid" id="overviewStatsGrid">
+                        <div class="stat-card loading-card">
+                            <div class="spinner"></div>
+                        </div>
+                        <div class="stat-card loading-card">
+                            <div class="spinner"></div>
+                        </div>
+                        <div class="stat-card loading-card">
+                            <div class="spinner"></div>
+                        </div>
+                        <div class="stat-card loading-card">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Shopping Bills Dashboard -->
+                <div class="dashboard-content" id="shoppingDashboard">
+                    <div class="stats-grid" id="shoppingStatsGrid">
+                        <div class="stat-card loading-card">
+                            <div class="spinner"></div>
+                        </div>
+                        <div class="stat-card loading-card">
+                            <div class="spinner"></div>
+                        </div>
+                        <div class="stat-card loading-card">
+                            <div class="spinner"></div>
+                        </div>
+                        <div class="stat-card loading-card">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Parking Bills Dashboard -->
+                <div class="dashboard-content" id="parkingDashboard">
+                    <div class="stats-grid" id="parkingStatsGrid">
+                        <div class="stat-card loading-card">
+                            <div class="spinner"></div>
+                        </div>
+                        <div class="stat-card loading-card">
+                            <div class="spinner"></div>
+                        </div>
+                        <div class="stat-card loading-card">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <a href="/" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Home
+                </a>
+                
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput" placeholder="Search receipts, bills, phone numbers...">
+                    </div>
+                </div>
+                
+                <a href="/export_receipts_excel" class="export-btn">
+                    <i class="fas fa-file-excel"></i>
+                    Export to Excel
+                </a>
+                <button class="btn clean-db-btn" id="clean-db-btn">
+                    <i class="fas fa-trash"></i> Clean Database
+                </button>
+            </div>
+            
+            <div class="table-card">
+                <div class="table-header">
+                    <h2 class="table-title">All Receipt Records</h2>
+                    <p class="table-subtitle">Complete history of processed receipts and parking fee waivers</p>
+                    
+                    <!-- Receipt Tabs -->
+                    <div class="receipt-tabs">
+                        <button id="all-tab" class="receipt-tab active">All Receipts</button>
+                        <button id="shopping-tab" class="receipt-tab">Shopping Bills</button>
+                        <button id="parking-tab" class="receipt-tab">Parking Tickets</button>
+                    </div>
+                </div>
+                
+                <!-- All Receipts Tab Content -->
+                <div id="all-receipts-content" class="tab-content active">
+                    <div class="table-container">
+                        <table class="responsive-table" id="receiptsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Store Name</th>
+                                    <th>Shopping Bill No</th>
+                                    <th>Shopping Amount</th>
+                                    <th>Shopping Date</th>
+                                    <th>Parking Ticket No</th>
+                                    <th>Vehicle No</th>
+                                    <th>Parking Ticket Date</th>
+                                    <th>Used Parking Offer</th>
+                                    <th>Processed At</th>
+                                    <th>Filename</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if receipts %}
+                                    {% for receipt in receipts %}
+                                    <tr>
+                                        <td>{{ receipt[0] }}</td>
+                                        <td>{{ receipt[1] or 'N/A' }}</td>
+                                        <td>{{ receipt[2] or 'N/A' }}</td>
+                                        <td>{{ receipt[3] or 'N/A' }}</td>
+                                        <td>{{ receipt[4] or 'N/A' }}</td>
+                                        <td>{{ receipt[5] or 'N/A' }}</td>
+                                        <td>{{ receipt[6] or 'N/A' }}</td>
+                                        <td>{{ receipt[7] or 'N/A' }}</td>
+                                        <td>
+                                            {% if receipt[8] %}
+                                                <span class="badge badge-success">Yes</span>
+                                            {% else %}
+                                                <span class="badge badge-secondary">No</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ receipt[9] or 'N/A' }}</td>
+                                        <td>{{ receipt[10] or 'N/A' }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr><td colspan="11">No receipts found.</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Shopping Bills Tab Content -->
+                <div id="shopping-receipts-content" class="tab-content">
+                    <div class="table-container">
+                        <table class="responsive-table" id="shoppingTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Store Name</th>
+                                    <th>Shopping Bill No</th>
+                                    <th>Shopping Amount</th>
+                                    <th>Shopping Date</th>
+                                    <th>Used Parking Offer</th>
+                                    <th>Processed At</th>
+                                    <th>Filename</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if receipts %}
+                                    {% for receipt in receipts %}
+                                        {# Show only pure shopping bills with no parking info #}
+                                        {% if receipt[1] != 'Parking' and not receipt[5] and not receipt[6] and (receipt[10] and 'parking' not in receipt[10]|lower) %}
+                                        <tr>
+                                            <td>{{ receipt[0] }}</td>
+                                            <td>{{ receipt[1] or 'N/A' }}</td>
+                                            <td>{{ receipt[2] or 'N/A' }}</td>
+                                            <td>{{ receipt[3] or 'N/A' }}</td>
+                                            <td>{{ receipt[4] or 'N/A' }}</td>
+                                            <td>
+                                                {% if receipt[8] %}
+                                                    <span class="badge badge-success">Yes</span>
+                                                {% else %}
+                                                    <span class="badge badge-secondary">No</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ receipt[9] or 'N/A' }}</td>
+                                            <td>{{ receipt[10] or 'N/A' }}</td>
+                                        </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <tr><td colspan="8">No shopping bills found.</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Parking Tickets Tab Content -->
+                <div id="parking-receipts-content" class="tab-content">
+                    <div class="table-container">
+                        <table class="responsive-table" id="parkingTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Parking Ticket No</th>
+                                    <th>Vehicle No</th>
+                                    <th>Parking Ticket Date</th>
+                                    <th>Direct Payment</th>
+                                    <th>Processed At</th>
+                                    <th>Filename</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if receipts %}
+                                    {% for receipt in receipts %}
+                                        {# Show any receipt with parking information, regardless of store_name #}
+                                        {% if receipt[1] == 'Parking' or receipt[5] or receipt[6] or (receipt[10] and 'parking' in receipt[10]|lower) %}
+                                        <tr>
+                                            <td>{{ receipt[0] }}</td>
+                                            <td>{{ receipt[5] or 'N/A' }}</td>
+                                            <td>{{ receipt[6] or 'N/A' }}</td>
+                                            <td>{{ receipt[7] or 'N/A' }}</td>
+                                            <td>
+                                                {% if receipt[8] %}
+                                                    <span class="badge badge-danger">Paid</span>
+                                                {% else %}
+                                                    <span class="badge badge-success">Waived</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ receipt[9] or 'N/A' }}</td>
+                                            <td>{{ receipt[10] or 'N/A' }}</td>
+                                        </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <tr><td colspan="7">No parking tickets found.</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pagination-container" id="paginationContainer">
+                <span class="pagination-info" id="paginationInfo"></span>
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </main>
+        <div class="call-to-action">🚀 Try our new mobile app for even faster validation and receipt management!</div>
+    </div>      <script>        // Load dashboard statistics on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardStats();
+            loadReceiptsData();
+            // Initialize receipt manager after dashboard loads
+            setTimeout(() => {
+                // Make receipt manager globally available so tab switching can access it
+                window.receiptManager = new ReceiptManager();
+            }, 100);
+        });
+        
+        function loadReceiptsData() {
+            console.log('Fetching receipt data...');
+            fetch('/api/recent_receipts')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.receipts) {
+                        console.log(`Successfully fetched ${data.receipts.length} receipts`);
+                        
+                        // Count shopping and parking receipts for debugging
+                        const shoppingCount = data.receipts.filter(r => r.store_name !== 'Parking').length;
+                        const parkingCount = data.receipts.filter(r => r.store_name === 'Parking').length;
+                        console.log(`Found ${shoppingCount} shopping receipts and ${parkingCount} parking receipts`);
+                        
+                        // Display receipts in all three tables
+                        displayAllReceiptsTables(data.receipts);
+                    } else {
+                        console.error('Failed to load receipts data:', data);
+                        displayErrorMessage();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading receipts:', error);
+                    displayErrorMessage();
+                });
+        }
+        
+        function displayAllReceiptsTables(receipts) {
+            // First verify all required table elements exist
+            const allReceiptsTable = document.querySelector('#all-receipts-content .responsive-table');
+            const shoppingTable = document.querySelector('#shopping-receipts-content .responsive-table');
+            const parkingTable = document.querySelector('#parking-receipts-content .responsive-table');
+            
+            console.log('Tables found:',
+                allReceiptsTable ? 'All Receipts ✓' : 'All Receipts ✗', 
+                shoppingTable ? 'Shopping ✓' : 'Shopping ✗', 
+                parkingTable ? 'Parking ✓' : 'Parking ✗');
+                
+            // Make sure each table has a tbody
+            if (allReceiptsTable && !allReceiptsTable.querySelector('tbody')) {
+                console.log('Adding tbody to All Receipts table');
+                allReceiptsTable.appendChild(document.createElement('tbody'));
+            }
+            
+            if (shoppingTable && !shoppingTable.querySelector('tbody')) {
+                console.log('Adding tbody to Shopping table');
+                shoppingTable.appendChild(document.createElement('tbody'));
+            }
+            
+            if (parkingTable && !parkingTable.querySelector('tbody')) {
+                console.log('Adding tbody to Parking table');
+                parkingTable.appendChild(document.createElement('tbody'));
+            }
+            
+            // Update all three tables with their respective data
+            displayAllReceiptsTable(receipts);
+            displayShoppingReceiptsTable(receipts);
+            displayParkingReceiptsTable(receipts);
+        }
+        
+        function displayAllReceiptsTable(receipts) {
+            // Update all receipts tab
+            const tableBody = document.querySelector('#all-receipts-content .responsive-table tbody');
+            if (tableBody) {
+                tableBody.innerHTML = '';
+                
+                if (receipts.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="11">No receipts found.</td></tr>';
+                    return;
+                }
+                
+                // Filter to show only session-based IDs and prevent duplicates
+                const seenSessionIds = new Set();
+                const filteredReceipts = receipts.filter(receipt => {
+                    // Check if this is a session-based ID (either directly or combined)
+                    const isSessionBased = 
+                        (receipt.id && typeof receipt.id === 'string' && receipt.id.startsWith('S')) ||
+                        (receipt.combined_ids && Array.isArray(receipt.combined_ids) && receipt.combined_ids.length > 0);
+                        
+                    if (!isSessionBased) return false;
+                    
+                    // Extract the session ID to check for duplicates
+                    let sessionId;
+                    if (receipt.id && typeof receipt.id === 'string' && receipt.id.startsWith('S')) {
+                        sessionId = receipt.id;
+                    } else if (receipt.combined_ids && Array.isArray(receipt.combined_ids)) {
+                        sessionId = 'S' + receipt.combined_ids[0];
+                    } else {
+                        return false;
+                    }
+                    
+                    // Skip if we've already seen this session ID
+                    if (seenSessionIds.has(sessionId)) return false;
+                    
+                    // Add to seen set and include in filtered results
+                    seenSessionIds.add(sessionId);
+                    return true;
+                });
+                
+                // If no session-based records found after filtering
+                if (filteredReceipts.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="11">No session-based receipts found.</td></tr>';
+                    return;
+                }
+                
+                filteredReceipts.forEach((receipt, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDisplayId(receipt) || 'N/A'}</td>
+                        <td>${receipt.store_name || 'N/A'}</td>
+                        <td>${receipt.shopping_bill_no || receipt.bill_number || 'N/A'}</td>
+                        <td>${receipt.shopping_amount || receipt.total_amount || 'N/A'}</td>
+                        <td>${formatDateTime(receipt.shopping_date) || 'N/A'}</td>
+                        <td>${receipt.parking_ticket_no || 'N/A'}</td>
+                        <td>${receipt.vehicle_no || 'N/A'}</td>
+                        <td>${formatDateTime(receipt.parking_ticket_date) || 'N/A'}</td>
+                        <td>
+                            ${receipt.parking_fee_waived ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-secondary">No</span>'}
+                        </td>
+                        <td>${formatDateTime(receipt.processed_at) || 'N/A'}</td>
+                        <td>${receipt.filename || 'N/A'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                
+                console.log(`Displayed ${filteredReceipts.length} session-based receipts in all receipts tab (filtered from ${receipts.length} total)`);
+            } else {
+                console.error('All receipts table body not found!');
+            }
+        }
+        
+        function displayShoppingReceiptsTable(receipts) {
+            // Update shopping receipts tab - filter for shopping receipts
+            const tableBody = document.querySelector('#shopping-receipts-content .responsive-table tbody');
+            if (tableBody) {
+                tableBody.innerHTML = '';
+                
+                // Filter for shopping receipts, including those in combined records
+                const shoppingReceipts = receipts.filter(receipt => {
+                    // Include if store_name is not 'Parking' (meaning it's a shopping record)
+                    if (receipt.store_name !== 'Parking') {
+                        return true;
+                    }
+                    
+                    // Include combined records that have shopping bill information
+                    if (receipt.shopping_bill_no || receipt.shopping_amount) {
+                        return true;
+                    }
+                    
+                    // Skip all other records
+                    return false;
+                });
+                
+                if (shoppingReceipts.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="8">No shopping bills found.</td></tr>';
+                    return;
+                }
+                
+                shoppingReceipts.forEach((receipt, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDisplayId(receipt) || 'N/A'}</td>
+                        <td>${receipt.store_name || 'N/A'}</td>
+                        <td>${receipt.shopping_bill_no || receipt.bill_number || 'N/A'}</td>
+                        <td>${receipt.shopping_amount || receipt.total_amount || 'N/A'}</td>
+                        <td>${formatDateTime(receipt.shopping_date) || 'N/A'}</td>
+                        <td>
+                            ${receipt.parking_fee_waived ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-secondary">No</span>'}
+                        </td>
+                        <td>${formatDateTime(receipt.processed_at) || 'N/A'}</td>
+                        <td>${receipt.filename || 'N/A'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                
+                console.log(`Displayed ${shoppingReceipts.length} shopping receipts`);
+            } else {
+                console.error('Shopping table body not found!');
+            }
+        }
+        
+        function displayParkingReceiptsTable(receipts) {
+            // Update parking receipts tab - filter for parking receipts only
+            const tableBody = document.querySelector('#parking-receipts-content .responsive-table tbody');
+            if (tableBody) {
+                tableBody.innerHTML = '';
+                
+                // Filter for parking receipts only - ENHANCED FILTER
+                // Show any receipt that has parking ticket information, regardless of store_name
+                const parkingReceipts = receipts.filter(receipt => {
+                    // First condition: if it's explicitly marked as a Parking receipt
+                    if (receipt.store_name === 'Parking') {
+                        return true;
+                    }
+                    
+                    // Second condition: check if the receipt has any parking information
+                    if (receipt.parking_ticket_no || receipt.vehicle_no) {
+                        return true;
+                    }
+                    
+                    // Third condition: check if filename suggests it's a parking ticket
+                    if (receipt.filename && receipt.filename.toLowerCase().includes('parking')) {
+                        return true;
+                    }
+                    
+                    // Not a parking ticket
+                    return false;
+                });
+                
+                if (parkingReceipts.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="7">No parking tickets found.</td></tr>';
+                    return;
+                }
+                
+                parkingReceipts.forEach((receipt, index) => {
+                    // Debug info about vehicle numbers
+                    console.log(`Parking receipt ${index}: vehicle_no=${receipt.vehicle_no}, vehicle_number=${receipt.vehicle_number}, merchant_info=${receipt.merchant_info?.substring(0, 50)}`);
+                    
+                    // COMPLETELY REWRITTEN VEHICLE NUMBER EXTRACTION LOGIC
+                    // This comprehensive approach handles all formats including terminal/airport tickets
+                    
+                    let vehicleNo = '';
+                    let extractionSource = '';
+                    
+                    // STEP 1: Check database fields first (most reliable source)
+                    if (receipt.vehicle_no) {
+                        vehicleNo = receipt.vehicle_no;
+                        extractionSource = 'database field vehicle_no';
+                    } else if (receipt.vehicle_number) {
+                        vehicleNo = receipt.vehicle_number;
+                        extractionSource = 'database field vehicle_number';
+                    }
+                    
+                    // STEP 2: Try to extract from merchant_info metadata
+                    if (!vehicleNo && receipt.merchant_info) {
+                        const merchantInfoPatterns = [
+                            /VEHICLE:([^;]+)/i,
+                            /VEH(?:ICLE)?:([^;]+)/i,
+                            /CAR:([^;]+)/i
+                        ];
+                        
+                        for (const pattern of merchantInfoPatterns) {
+                            const match = pattern.exec(receipt.merchant_info);
+                            if (match && match[1]?.trim()) {
+                                vehicleNo = match[1].trim();
+                                extractionSource = 'merchant_info metadata';
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // STEP 3: For camera-captured images, focus on raw text extraction
+                    if (!vehicleNo && receipt.raw_text) {
+                        const rawText = receipt.raw_text.toUpperCase();
+                        
+                        // Define common Indian state codes for better pattern matching
+                        const indianStates = ['AP', 'AR', 'AS', 'BR', 'CG', 'CH', 'DD', 'DL', 'DN', 'GA', 'GJ', 
+                                             'HP', 'HR', 'JH', 'JK', 'KA', 'KL', 'LA', 'LD', 'MH', 'ML', 'MN', 
+                                             'MP', 'MZ', 'NL', 'OD', 'PB', 'PY', 'RJ', 'SK', 'TN', 'TR', 'TS', 
+                                             'UK', 'UP', 'WB'];
+                        
+                        // 3.1: First try terminal/airport specific formats (highest priority for mobile images)
+                        // IMPROVED FOR LOW QUALITY CAMERA IMAGES
+                        const terminalPatterns = [
+                            // Format from the sample image: "Veh No. : ka56df4578"
+                            /VEH\s*(?:NO|NUMBER|TYPE)\.?\s*[:=]\s*([A-Z]{2}\d{2,4}[A-Z]{1,4}\d{1,4})/i,
+                            
+                            // More generic terminal format with "Vehicle No" label
+                            /VEHICLE\s*(?:NO|NUMBER)\.?\s*[:=]\s*([A-Z]{2}\d{2,4}[A-Z]{1,4}\d{1,4})/i,
+                            
+                            // Formats with type then number (like seen in the image)
+                            /VEH\s*TYPE.*\s*VEH\s*NO\.?\s*[:=]\s*([A-Z]{2}\d{2,4}[A-Z]{1,4}\d{1,4})/i,
+                            
+                            // Most flexible terminal pattern (catches many variations)
+                            /(?:VEH|VEHICLE)\s*(?:NO|NUMBER|#)\.?(?:\s*[:=])?\s*([A-Z]{2}[\s-]?\d{2,4}[\s-]?[A-Z]{1,4}[\s-]?\d{1,4})/i,
+                            
+                            // EXTRA FLEXIBLE PATTERNS FOR LOW QUALITY IMAGES
+                            // More permissive with spacing and characters between elements for OCR errors
+                            /VEH.*NO.*[:=].*([A-Z]{2}[^A-Z]{0,4}\d{2,4}[^0-9]{0,4}[A-Z]{1,4}[^A-Z]{0,4}\d{1,4})/i,
+                            
+                            // Even more permissive pattern with very loose structure for bad OCR
+                            /VEH.*:.*([A-Z]{2}\D*\d{2,4}\D*[A-Z]{1,4}\D*\d{1,4})/i,
+                            
+                            // Special pattern for very poor OCR that might confuse characters
+                            /[VUY]EH.*(?:NO|HD|ND).*[:=;.,]?\s*([A-Z0O]{2}[0-9]{2,4}[A-Z0-9]{1,4}[0-9]{1,4})/i,
+                            
+                            // Character substitution variations (common OCR errors: 0/O, 1/I, 5/S, 8/B)
+                            /VEH\s*(?:NO|N0|ND)\.?\s*[:=]\s*([A-Z0O]{2}[0-9]{2,4}[A-Z0-9]{1,4}[0-9]{1,4})/i
+                        ];
+                        
+                        for (const pattern of terminalPatterns) {
+                            const match = pattern.exec(rawText);
+                            if (match && match[1]) {
+                                vehicleNo = match[1].replace(/\s+|-/g, '');
+                                extractionSource = 'terminal ticket pattern';
+                                break;
+                            }
+                        }
+                        
+                        // 3.2: If not found, try standard Indian vehicle number formats
+                        if (!vehicleNo) {
+                            // Build a pattern to match state codes
+                            const statePattern = indianStates.join('|');
+                            
+                            const standardPatterns = [
+                                // With separators: KA 01 AB 1234
+                                new RegExp(`(${statePattern})\\s*(\\d{1,2})\\s*([A-Z]{1,3})\\s*(\\d{1,4})`, 'i'),
+                                
+                                // Without separators: KA01AB1234
+                                new RegExp(`(${statePattern})(\\d{1,2})([A-Z]{1,3})(\\d{1,4})`, 'i')
+                            ];
+                            
+                            for (const pattern of standardPatterns) {
+                                const match = pattern.exec(rawText);
+                                if (match) {
+                                    vehicleNo = `${match[1]}${match[2]}${match[3]}${match[4]}`;
+                                    extractionSource = 'standard Indian format';
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        // 3.3: Line-by-line approach for structured formats - IMPROVED FOR LOW QUALITY IMAGES
+                        if (!vehicleNo) {
+                            const lines = rawText.split('\n');
+                            for (const line of lines) {
+                                // Focus on lines with "Veh No" or "Vehicle No" - MADE MORE FLEXIBLE FOR OCR ERRORS
+                                if (/[VUY]EH.*N[O0D]|[VUY]EHICLE.*N[O0D]/i.test(line)) {
+                                    console.log(`Potential vehicle number line found: ${line}`);
+                                    
+                                    // Try to extract value after a separator (more separators for OCR errors)
+                                    let separatorChar = null;
+                                    let separatorIndex = -1;
+                                    
+                                    // Check for various separators that could appear in low-quality images
+                                    const possibleSeparators = [':', '=', '-', '.', ';', ',', '•'];
+                                    for (const sep of possibleSeparators) {
+                                        if (line.includes(sep)) {
+                                            separatorChar = sep;
+                                            separatorIndex = line.indexOf(sep);
+                                            break;
+                                        }
+                                    }
+                                    
+                                    // Also check for space as separator if a more common one isn't found
+                                    if (!separatorChar) {
+                                        // Look for space after "NO" or "NUMBER" pattern
+                                        const noMatch = /(?:NO|NUMBER|N[O0])[.\s]+/.exec(line);
+                                        if (noMatch) {
+                                            separatorIndex = noMatch.index + noMatch[0].length - 1;
+                                            separatorChar = ' ';
+                                        }
+                                    }
+                                    
+                                    if (separatorChar) {
+                                        // Get everything after the separator
+                                        const afterSeparator = line.substring(separatorIndex + 1).trim();
+                                        console.log(`After separator: "${afterSeparator}"`);
+                                        
+                                        // For low quality images, try to extract any alphanumeric sequence that looks like a vehicle number
+                                        const potentialVehicleMatches = [
+                                            /([A-Z]{2}\s*\d{1,4}\s*[A-Z]{1,4}\s*\d{1,4})/i, // Standard format with spaces
+                                            /([A-Z]{2}\d{1,4}[A-Z]{1,4}\d{1,4})/i,           // No spaces
+                                            /([A-Z]{1,2}[\s\.\-]*\d{1,4}[\s\.\-]*[A-Z0-9]{1,4}[\s\.\-]*\d{1,4})/i // Very flexible
+                                        ];
+                                        
+                                        for (const pattern of potentialVehicleMatches) {
+                                            const match = pattern.exec(afterSeparator);
+                                            if (match) {
+                                                vehicleNo = match[1];
+                                                extractionSource = 'line with label and separator (low quality)';
+                                                console.log(`Vehicle number extracted from line: "${vehicleNo}"`);
+                                                break;
+                                            }
+                                        }
+                                        
+                                        // If still not found but there's a short string that might be a vehicle number
+                                        if (!vehicleNo && afterSeparator.length >= 4 && afterSeparator.length <= 15) {
+                                            // Take the whole string after the separator if it looks reasonable
+                                            vehicleNo = afterSeparator;
+                                            extractionSource = 'line with label and separator (whole value)';
+                                            console.log(`Taking entire string after separator: "${vehicleNo}"`);
+                                        }
+                                        
+                                        if (vehicleNo) break;
+                                    } 
+                                    // For lines without clear separators
+                                    else {
+                                        const parts = line.trim().split(/\s+/);
+                                        
+                                        // Look through each part for potential vehicle numbers
+                                        for (let i = 0; i < parts.length; i++) {
+                                            // Skip parts that look like labels
+                                            if (/VEH|VEHICLE|NO|NUMBER|TYPE/i.test(parts[i])) continue;
+                                            
+                                            // Check if this part looks like it could be a vehicle number
+                                            if (parts[i].length >= 4 && /[A-Z0-9]{4,12}/i.test(parts[i])) {
+                                                // Check if it starts with what looks like a state code
+                                                if (/^[A-Z]{1,2}/i.test(parts[i])) {
+                                                    vehicleNo = parts[i];
+                                                    extractionSource = 'line with label without separator';
+                                                    console.log(`Found vehicle number from parts: "${vehicleNo}"`);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        
+                                        // If not found above, try last part as it's often the number after labels
+                                        if (!vehicleNo && parts.length >= 3) {
+                                            const lastPart = parts[parts.length - 1].trim();
+                                            if (lastPart.length >= 3) {
+                                                vehicleNo = lastPart;
+                                                extractionSource = 'line with label (last part)';
+                                                console.log(`Using last part as vehicle number: "${vehicleNo}"`);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                
+                                // Check for short lines with state code pattern (common in terminal tickets)
+                                if (!vehicleNo && line.trim().length >= 4 && line.trim().length <= 20) {
+                                    // Check if line starts with a state code
+                                    for (const state of indianStates) {
+                                        if (line.trim().startsWith(state) || line.trim().includes(` ${state}`)) {
+                                            // If it's just a vehicle number on its own line
+                                            const stateMatch = new RegExp(`(?:^|\\s)(${state}\\d{2,4}[A-Z]{1,4}\\d{1,4})(?:$|\\s)`, 'i').exec(line.trim());
+                                            if (stateMatch) {
+                                                vehicleNo = stateMatch[1];
+                                                extractionSource = 'standalone state code line';
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Special check for terminal format like "ka56df4578" without labels
+                                    if (!vehicleNo) {
+                                        const terminalMatch = /(?:^|\s)([A-Z]{2}\d{2,4}[A-Z]{1,4}\d{1,4})(?:$|\s)/i.exec(line.trim());
+                                        if (terminalMatch) {
+                                            vehicleNo = terminalMatch[1];
+                                            extractionSource = 'terminal format standalone line';
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // 3.4: Last resort - direct search in raw text without context - IMPROVED FOR LOW QUALITY IMAGES
+                        if (!vehicleNo) {
+                            console.log("Trying low-quality image special extraction methods...");
+                            
+                            // First try the standard methods
+                            for (const state of indianStates) {
+                                const directMatch = new RegExp(`(?:^|\\s)(${state}\\d{1,4}[A-Z]{1,4}\\d{1,4})(?:$|\\s)`, 'i').exec(rawText);
+                                if (directMatch) {
+                                    vehicleNo = directMatch[1].replace(/\s+|-/g, '');
+                                    extractionSource = 'direct text search';
+                                    break;
+                                }
+                                
+                                // Most flexible pattern that still maintains state code integrity
+                                const flexibleMatch = new RegExp(`(?:^|\\s)(${state}[^A-Z0-9]{0,2}\\d{1,4}[^A-Z0-9]{0,2}[A-Z]{1,4}[^A-Z0-9]{0,2}\\d{1,4})(?:$|\\s)`, 'i').exec(rawText);
+                                if (flexibleMatch) {
+                                    vehicleNo = flexibleMatch[1].replace(/[^A-Z0-9]/gi, '');
+                                    extractionSource = 'flexible direct search';
+                                    break;
+                                }
+                            }
+                            
+                            // SPECIAL HANDLING FOR LOW QUALITY IMAGES
+                            if (!vehicleNo) {
+                                // For very low quality images, try these special patterns
+                                
+                                // 1. Look for "Veh No" or similar with a value on the same line or next line
+                                const vehLineMatch = /[VUY]EH\s*(?:NO|N0|TYPE)[^A-Z0-9]*([A-Z]{1,2}[0-9]{1,4}[A-Z0-9]{1,9})/i.exec(rawText);
+                                if (vehLineMatch) {
+                                    vehicleNo = vehLineMatch[1];
+                                    extractionSource = 'low-quality direct text pattern';
+                                }
+                                
+                                // 2. Look for common terminal ticket format patterns (more permissive for OCR errors)
+                                if (!vehicleNo) {
+                                    const terminalFormats = [
+                                        // Format like the sample with potential OCR errors
+                                        /[kx]{1}[ao]\s*\d{2}\s*[dof]{1,2}\s*\d{4}/i,
+                                        // Format for "ka56df4578" with possible OCR errors
+                                        /([kx][ao]\d{2,4}[dof]{1,3}\d{3,5})/i,
+                                        // Most generic state+number pattern
+                                        /([a-z]{2}\d{2,4}[a-z0-9]{1,5}\d{1,5})/i
+                                    ];
+                                    
+                                    for (const pattern of terminalFormats) {
+                                        const match = pattern.exec(rawText);
+                                        if (match) {
+                                            vehicleNo = match[1] || match[0];
+                                            extractionSource = 'terminal-format from low-quality image';
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                                // 3. Look for state codes with potential OCR errors
+                                if (!vehicleNo) {
+                                    const stateCodesWithErrors = [
+                                        // Common OCR errors for state codes
+                                        { code: 'KA', variants: ['l<A', 'I<A', 'KA', 'XA', '1<A'] },
+                                        { code: 'DL', variants: ['OL', 'DL', 'D1', '01'] },
+                                        { code: 'MH', variants: ['MH', 'NH', 'HH'] },
+                                        { code: 'TN', variants: ['TN', 'IN', '1N'] },
+                                        // Add more state codes and variants as needed
+                                    ];
+                                    
+                                    for (const state of stateCodesWithErrors) {
+                                        for (const variant of state.variants) {
+                                            const variantMatch = new RegExp(`${variant}\\s*\\d{1,4}\\s*[A-Z0-9]{1,4}\\s*\\d{1,4}`, 'i').exec(rawText);
+                                            if (variantMatch) {
+                                                vehicleNo = variantMatch[0].replace(/\s+/g, '');
+                                                // Correct the state code
+                                                vehicleNo = state.code + vehicleNo.substring(variant.length);
+                                                extractionSource = `state code variant ${variant}→${state.code}`;
+                                                break;
+                                            }
+                                        }
+                                        if (vehicleNo) break;
+                                    }
+                                }
+                                
+                                // 4. Look for anything that might be a vehicle number in terminal format 
+                                // (last resort for very poor quality images)
+                                if (!vehicleNo) {
+                                    // Split by lines to analyze each line individually
+                                    const lines = rawText.split('\n');
+                                    for (const line of lines) {
+                                        // Skip long lines - vehicle numbers usually appear on short lines
+                                        if (line.length > 25) continue;
+                                        
+                                        // Look for patterns that resemble "ka56df4578" style numbers
+                                        const alphanumericPattern = /([a-z]{2}\d{2,4}[a-z]{1,4}\d{3,4})/i;
+                                        const match = alphanumericPattern.exec(line);
+                                        if (match && match[1].length >= 8 && match[1].length <= 12) {
+                                            vehicleNo = match[1];
+                                            extractionSource = 'last resort alphanumeric pattern';
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    // STEP 4: Try extracting from filename as a last resort
+                    if (!vehicleNo && receipt.filename) {
+                        // Look for vehicle number patterns in filenames
+                        const fileVehicleMatch = /(?:veh|vehicle)[_-]?([A-Z]{2}\d{1,2}[A-Z]{1,3}\d{1,4})/i.exec(receipt.filename);
+                        if (fileVehicleMatch) {
+                            vehicleNo = fileVehicleMatch[1].toUpperCase();
+                            extractionSource = 'filename pattern';
+                        }
+                    }
+                    
+                    // STEP 5: Clean up and format the result - IMPROVED FOR LOW QUALITY IMAGES
+                    if (vehicleNo) {
+                        // First standardize formatting and remove any unwanted characters
+                        vehicleNo = vehicleNo.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+                        
+                        // Special post-processing for low-quality images to fix common OCR errors
+                        // Fix common OCR confusions in state codes
+                        const stateCodeFixMap = {
+                            'O': 'D', // e.g., OL→DL for Delhi
+                            'l<A': 'KA', // OCR often mistakes KA as l<A
+                            'I<A': 'KA', // OCR often mistakes KA as I<A
+                            'XA': 'KA', // OCR often mistakes KA as XA
+                            '1<A': 'KA', // OCR often mistakes KA as 1<A
+                            '0D': 'OD', // OCR often mistakes OD as 0D
+                            'RJ1': 'RJ',
+                            'D1': 'DL'
+                        };
+                        
+                        // Extract the first two characters (should be the state code)
+                        const possibleStateCode = vehicleNo.substring(0, 2);
+                        for (const [wrong, correct] of Object.entries(stateCodeFixMap)) {
+                            if (possibleStateCode === wrong) {
+                                vehicleNo = correct + vehicleNo.substring(2);
+                                console.log(`Fixed state code: ${wrong} → ${correct}`);
+                                break;
+                            }
+                        }
+                        
+                        // Fix common OCR character confusions
+                        const commonOcrFixes = [
+                            {pattern: /^([A-Z]{2})O/, replacement: '$10'}, // e.g., KAO1 → KA01
+                            {pattern: /^([A-Z]{2})l/, replacement: '$11'}, // e.g., KAl2 → KA12
+                            {pattern: /^([A-Z]{2})I/, replacement: '$11'}, // e.g., KAI2 → KA12
+                            {pattern: /([A-Z]{2}\d{2})0/, replacement: '$1O'}, // e.g., KA01B → KA01B (no change needed)
+                            {pattern: /([A-Z]{2}\d{2})1/, replacement: '$1I'}, // e.g., KA011234 → KA01I234
+                            {pattern: /([A-Z]{2}\d{2}[A-Z])0(\d{3})/, replacement: '$1O$2'}, // Fix letter O confused as 0
+                            {pattern: /([A-Z]{2}\d{2}[A-Z])1(\d{3})/, replacement: '$1I$2'}, // Fix letter I confused as 1
+                            {pattern: /([A-Z]{2}\d{2})S(\d{3,4})/, replacement: '$15$2'}, // Fix 5 confused as S
+                            {pattern: /([A-Z]{2}\d{2})B(\d{3,4})/, replacement: '$18$2'}, // Fix 8 confused as B
+                        ];
+                        
+                        for (const fix of commonOcrFixes) {
+                            const oldVehicleNo = vehicleNo;
+                            vehicleNo = vehicleNo.replace(fix.pattern, fix.replacement);
+                            if (oldVehicleNo !== vehicleNo) {
+                                console.log(`Applied OCR fix: ${oldVehicleNo} → ${vehicleNo}`);
+                            }
+                        }
+                        
+                        // Special handling for terminal format "ka56df4578"
+                        // If it looks like a terminal format, standardize it
+                        if (/^[A-Z]{2}\d{2,4}[A-Z]{1,4}\d{1,4}$/i.test(vehicleNo)) {
+                            // It's already in the expected format - keep it as is
+                            console.log(`Terminal format detected and preserved: ${vehicleNo}`);
+                        }
+                        
+                        console.log(`Extracted vehicle number [${extractionSource}]: ${vehicleNo}`);
+                    } else {
+                        vehicleNo = 'N/A';
+                    }
+                    
+                    // ENHANCED TICKET NUMBER EXTRACTION FOR LOW QUALITY IMAGES
+                    // This section extracts the parking ticket number from the raw text
+                    let ticketNo = receipt.parking_ticket_no || receipt.bill_number || '';
+                    let ticketSource = '';
+                    
+                    // Only try to extract if no ticket number is available or if it's a low quality image
+                    if ((!ticketNo || ticketNo === 'N/A') && receipt.raw_text) {
+                        const rawText = receipt.raw_text.toUpperCase();
+                        console.log("Trying to extract ticket number from raw text...");
+                        
+                        // Check if this might be a terminal/airport ticket
+                        const isTerminalTicket = /TERMINAL|AIRPORT|EXIT|ENTRY/i.test(rawText);
+                        if (isTerminalTicket) {
+                            console.log("Detected terminal/airport parking context");
+                        }
+                        
+                        // STEP 1: AIRPORT/TERMINAL SPECIFIC FORMATS - HIGHEST PRIORITY
+                        // For handling the specific format like "1188202" in the sample image
+                        if (isTerminalTicket) {
+                            // Try specific format patterns for airport/terminal tickets
+                            const terminalPatterns = [
+                                // Terminal ID followed by Ticket Number on next line (exact format from sample)
+                                /TERMINAL\s*ID\s*[:.\-=]?\s*\d+\s*(?:\n|\r\n|\s)\s*TICKET\s*(?:NO|NUMBER)[.\-:=\s]*(\d{6,8})/i,
+                                
+                                // Terminal ID with ticket number in same line
+                                /TERMINAL\s*ID.*TICKET\s*(?:NO|NUMBER)[.\-:=\s]*(\d{6,8})/i,
+                                
+                                // Entry/Exit ticket formats
+                                /(?:ENTRY|EXIT)\s*TICKET.*TICKET\s*(?:NO|NUMBER)[.\-:=\s]*(\d{6,8})/i,
+                                
+                                // Most flexible terminal pattern with OCR errors
+                                /[T][l1IE][R][M][l1I][N][A][L].*(?:NO|N0|NUMBER)[.\-:=\s]*(\d{6,8})/i,
+                                
+                                // Look for standalone 6-8 digit numbers (like "1188202")
+                                /(?:^|\s|\n)(\d{6,8})(?:$|\s|\n)/m
+                            ];
+                            
+                            for (const pattern of terminalPatterns) {
+                                const match = pattern.exec(rawText);
+                                if (match && match[1]) {
+                                    ticketNo = match[1].trim();
+                                    ticketSource = 'terminal/airport ticket pattern';
+                                    console.log(`Extracted terminal/airport ticket number: ${ticketNo}`);
+                                    break;
+                                }
+                            }
+                            
+                            // If still not found, try line-by-line for terminal tickets
+                            if (!ticketNo) {
+                                const lines = rawText.split('\n');
+                                
+                                // First priority: look for standalone 6-8 digit numbers on their own lines
+                                for (const line of lines) {
+                                    const trimmedLine = line.trim();
+                                    // If line is just 6-8 digits and nothing else, it's likely the ticket number
+                                    if (/^\d{6,8}$/.test(trimmedLine)) {
+                                        ticketNo = trimmedLine;
+                                        ticketSource = 'standalone terminal ticket number line';
+                                        console.log(`Found standalone terminal ticket number line: ${ticketNo}`);
+                                        break;
+                                    }
+                                }
+                                
+                                // Second priority: look for lines with "Ticket No" label
+                                if (!ticketNo) {
+                                    for (const line of lines) {
+                                        if (/TICKET\s*(?:NO|NUMBER)/i.test(line)) {
+                                            // Try to extract the number after the label
+                                            const ticketMatch = /TICKET\s*(?:NO|NUMBER)[.\-:=\s]*(\d+)/i.exec(line);
+                                            if (ticketMatch) {
+                                                ticketNo = ticketMatch[1];
+                                                ticketSource = 'terminal ticket with label';
+                                                console.log(`Found terminal ticket number with label: ${ticketNo}`);
+                                                break;
+                                            }
+                                            
+                                            // If not found in same line, check the next line
+                                            const lineIndex = lines.indexOf(line);
+                                            if (lineIndex < lines.length - 1) {
+                                                const nextLine = lines[lineIndex + 1].trim();
+                                                if (/^\d{4,}$/.test(nextLine)) {
+                                                    ticketNo = nextLine;
+                                                    ticketSource = 'terminal ticket number on next line';
+                                                    console.log(`Found terminal ticket number on next line: ${ticketNo}`);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // STEP 2: REGULAR TICKET NUMBER PATTERNS (if not found in terminal-specific formats)
+                        if (!ticketNo) {
+                            // 1. Try common ticket number patterns
+                            const ticketPatterns = [
+                                // Direct "Ticket No:" pattern
+                                /TICKET\s*(?:NO|NUMBER)[.\-:=\s]*(\d+)/i,
+                                
+                                // "Entry Ticket" followed by "Ticket No:" pattern
+                                /ENTRY\s*TICKET[^]*?TICKET\s*(?:NO|NUMBER)[.\-:=\s]*(\d+)/i,
+                                
+                                // Most flexible ticket pattern (for low quality images)
+                                /T[l1I]CKET\s*(?:NO|N0|NUMBER)[.\-:=\s]*(\d+)/i,
+                                
+                                // For very poor OCR that might confuse characters
+                                /[T][l1I][C][K][E][T].*(?:NO|N0|NUMBER)[.\-:=\s]*(\d+)/i,
+                                
+                                // Bill or receipt number patterns
+                                /(?:BILL|RECEIPT)\s*(?:NO|NUMBER)[.\-:=\s]*(\d+)/i,
+                                
+                                // Invoice number pattern
+                                /INVOICE\s*(?:NO|NUMBER)[.\-:=\s]*(\d+)/i
+                            ];
+                            
+                            for (const pattern of ticketPatterns) {
+                                const match = pattern.exec(rawText);
+                                if (match && match[1]) {
+                                    ticketNo = match[1].trim();
+                                    ticketSource = 'ticket pattern match';
+                                    console.log(`Extracted ticket number: ${ticketNo}`);
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        // STEP 3: Line-by-line approach if still not found
+                        if (!ticketNo) {
+                            const lines = rawText.split('\n');
+                            for (const line of lines) {
+                                // Look for lines containing ticket number
+                                if (/TICKET|ENTRY|BILL|INVOICE|RECEIPT/i.test(line) && /\d{5,}/i.test(line)) {
+                                    // Extract the numeric part from the line - most likely the ticket number
+                                    const numberMatch = /(\d{5,})/i.exec(line);
+                                    if (numberMatch) {
+                                        ticketNo = numberMatch[1];
+                                        ticketSource = 'line with numeric identifier';
+                                        console.log(`Found ticket number from line: ${ticketNo}`);
+                                        break;
+                                    }
+                                }
+                                
+                                // Look specifically for ticket number label
+                                if (/TICKET\s*(?:NO|NUMBER)/i.test(line)) {
+                                    // Try to extract after a colon or similar separator
+                                    const separatorIndex = Math.max(
+                                        line.indexOf(':'),
+                                        line.indexOf('='),
+                                        line.indexOf('-')
+                                    );
+                                    
+                                    if (separatorIndex > -1) {
+                                        const afterSeparator = line.substring(separatorIndex + 1).trim();
+                                        // Extract any sequence of digits
+                                        const digitMatch = /(\d+)/.exec(afterSeparator);
+                                        if (digitMatch) {
+                                            ticketNo = digitMatch[1];
+                                            ticketSource = 'line with label and separator';
+                                            console.log(`Extracted ticket number after separator: ${ticketNo}`);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // STEP 4: For any type of parking ticket (last resort)
+                        if (!ticketNo) {
+                            // Look for any standalone 6-8 digit number that could be a ticket number
+                            // Focus on formats like 1188202 from the sample
+                            const standaloneDigitMatch = /(?:^|\s)(\d{6,8})(?:$|\s)/m.exec(rawText);
+                            if (standaloneDigitMatch) {
+                                ticketNo = standaloneDigitMatch[1];
+                                ticketSource = 'standalone digit sequence';
+                                console.log(`Found standalone digit sequence as ticket number: ${ticketNo}`);
+                            }
+                            
+                            // If still not found, try more permissive digit patterns
+                            if (!ticketNo) {
+                                const anyDigitMatch = /(?:^|\s)(\d{4,10})(?:$|\s)/m.exec(rawText);
+                                if (anyDigitMatch) {
+                                    ticketNo = anyDigitMatch[1];
+                                    ticketSource = 'generic digit sequence';
+                                    console.log(`Found generic digit sequence as ticket number: ${ticketNo}`);
+                                }
+                            }
+                        }
+                        
+                        // STEP 5: Clean up and verify the ticket number
+                        if (ticketNo) {
+                            // Remove any non-digit characters
+                            ticketNo = ticketNo.replace(/[^0-9]/g, '');
+                            
+                            // Validate that it's a reasonable ticket number (not too short, not too long)
+                            if (ticketNo.length < 4 || ticketNo.length > 10) {
+                                console.log(`Extracted ticket number ${ticketNo} has suspicious length, might be incorrect`);
+                                // Still keep it but add a warning in console
+                            }
+                            
+                            console.log(`Final ticket number [${ticketSource}]: ${ticketNo}`);
+                        }
+                    }
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDisplayId(receipt) || 'N/A'}</td>
+                        <td>${ticketNo || receipt.parking_ticket_no || receipt.bill_number || 'N/A'}</td>
+                        <td>${vehicleNo}</td>
+                        <td>${formatDateTime(receipt.parking_ticket_date || receipt.date_time) || 'N/A'}</td>
+                        <td>
+                            ${receipt.parking_fee_waived ? '<span class="badge badge-success">Waived</span>' : '<span class="badge badge-danger">not Waived </span>'}
+                        </td>
+                        <td>${formatDateTime(receipt.processed_at) || 'N/A'}</td>
+                        <td>${receipt.filename || 'N/A'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                
+                console.log(`Displayed ${parkingReceipts.length} parking receipts`);
+            } else {
+                console.error('Parking table body not found!');
+            }
+        }
+        
+        function formatDateTime(dateString) {
+            if (!dateString || dateString === 'N/A') return 'N/A';
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return 'N/A';
+                return date.toLocaleString();
+            } catch (error) {
+                return 'N/A';
+            }
+        }
+        
+        function formatDisplayId(receipt) {
+            // If the record is combined or has a session-based ID format, return it as is
+            if (receipt.id && typeof receipt.id === 'string' && receipt.id.startsWith('S')) {
+                return `<span class="badge badge-primary">${receipt.id}</span>`;
+            }
+            
+            // If there are combined IDs, format them as a single ID
+            if (receipt.combined_ids && Array.isArray(receipt.combined_ids) && receipt.combined_ids.length > 0) {
+                return `<span class="badge badge-primary">S${receipt.combined_ids[0]}</span>`;
+            }
+            
+            // Otherwise return the regular ID with a simple format
+            return receipt.id;
+        }
+        
+        function getStatusClass(status) {
+            if (status === 'Parking Waived') return 'status-waived';
+            if (status === 'Paid Parking') return 'status-paid-parking';
+            return '';
+        }
+        
+        function displayErrorMessage() {
+            // Display error message in all tables
+            const tables = {
+                '#all-receipts-content .responsive-table tbody': 11,
+                '#shopping-receipts-content .responsive-table tbody': 8,
+                '#parking-receipts-content .responsive-table tbody': 7
+            };
+            
+            Object.entries(tables).forEach(([selector, colSpan]) => {
+                const tableBody = document.querySelector(selector);
+                if (tableBody) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="${colSpan}" style="text-align: center; padding: 2rem; color: #6b7280;">
+                                <div style="font-size: 1.1rem; margin-bottom: 0.5rem;">📋 No Data Available</div>
+                                <div>Upload some bills to see them here</div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            });
+        }
+
+        // Dashboard tab management
+        function showDashboard(dashboardType) {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.tab-button').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.dashboard-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to selected tab and content
+            document.getElementById(`${dashboardType}Tab`).classList.add('active');
+            document.getElementById(`${dashboardType}Dashboard`).classList.add('active');
+            
+            // Load appropriate statistics
+            if (dashboardType === 'overview') {
+                loadDashboardStats();
+            } else if (dashboardType === 'shopping') {
+                loadShoppingStats();
+            } else if (dashboardType === 'parking') {
+                loadParkingStats();
+            }
+        }
+
+        function loadDashboardStats() {
+            fetch('/api/dashboard_stats')
+                .then(response => response.json())
+                .then(data => {
+                    displayDashboardStats(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching dashboard stats:', error);
+                    displayErrorStats('overviewStatsGrid');
+                });
+        }
+
+        function loadShoppingStats() {
+            fetch('/api/shopping_stats')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayShoppingStats(data.shopping_stats);
+                    } else {
+                        console.error('Failed to load shopping stats:', data.error);
+                        displayErrorStats('shoppingStatsGrid');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching shopping stats:', error);
+                    displayErrorStats('shoppingStatsGrid');
+                });
+        }
+
+        function loadParkingStats() {
+            fetch('/api/parking_stats')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayParkingStats(data.parking_stats);
+                    } else {
+                        console.error('Failed to load parking stats:', data.error);
+                        displayErrorStats('parkingStatsGrid');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching parking stats:', error);
+                    displayErrorStats('parkingStatsGrid');
+                });
+        }        function displayDashboardStats(stats) {
+            const statsGrid = document.getElementById('overviewStatsGrid');
+            statsGrid.innerHTML = `
+                <div class="stat-card total-bills">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Bills</div>
+                        <div class="stat-icon total-bills">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">${stats.total_bills.toLocaleString()}</div>
+                    <div class="stat-description">Total number of processed receipts</div>
+                    <div class="stat-percentage positive">
+                        <i class="fas fa-arrow-up"></i>
+                        ${stats.today_processed} processed today
+                    </div>
+                </div>
+                <div class="stat-card free-parking">
+                    <div class="stat-header">
+                        <div class="stat-title">Eligible to Free Parking</div>
+                        <div class="stat-icon free-parking">
+                            <i class="fas fa-car-side"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">${stats.free_parking.toLocaleString()}</div>
+                    <div class="stat-description">Shopping bills with parking fee waived</div>
+                    <div class="stat-percentage positive">
+                        <i class="fas fa-percentage"></i>
+                        ${stats.free_parking_percentage}% of total bills
+                    </div>
+                </div>
+                <div class="stat-card charged-parking">
+                    <div class="stat-header">
+                        <div class="stat-title">Paid Parking</div>
+                        <div class="stat-icon charged-parking">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">${stats.paid_parking.toLocaleString()}</div>
+                    <div class="stat-description">Direct parking fee payments (₹50 each)</div>
+                    <div class="stat-percentage ${stats.paid_parking > 0 ? 'positive' : 'negative'}">
+                        <i class="fas fa-money-bill"></i>
+                        ${stats.paid_parking_percentage}% of total bills
+                    </div>
+                </div>
+                <div class="stat-card parking-offer-availed">
+                    <div class="stat-header">
+                        <div class="stat-title">Parking Offer Availed</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">${stats.parking_offer_availed ? stats.parking_offer_availed.toLocaleString() : '0'}</div>
+                    <div class="stat-description">Receipts where parking offer was availed</div>
+                </div>
+            `;
+        }
+
+        function displayShoppingStats(stats) {
+            const statsGrid = document.getElementById('shoppingStatsGrid');
+            
+            statsGrid.innerHTML = `
+                <div class="stat-card total-bills">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Shopping Bills</div>
+                        <div class="stat-icon total-bills">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">${stats.total_shopping_bills.toLocaleString()}</div>
+                    <div class="stat-description">All shopping transactions (excluding parking)</div>
+                    <div class="stat-percentage positive">
+                        <i class="fas fa-chart-line"></i>
+                        Shopping activity
+                    </div>
+                </div>                <div class="stat-card free-parking">
+                    <div class="stat-header">
+                        <div class="stat-title">Eligible to Free Parking</div>
+                        <div class="stat-icon free-parking">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">${stats.free_parking_shopping.toLocaleString()}</div>
+                    <div class="stat-description">Shopping bills eligible for parking waiver</div>
+                    <div class="stat-percentage positive">
+                        <i class="fas fa-percentage"></i>
+                        ${stats.free_parking_percentage}% of shopping bills
+                    </div>
+                </div>
+
+                <div class="stat-card charged-parking">
+                    <div class="stat-header">
+                        <div class="stat-title">Not Eligible to Free Parking</div>
+                        <div class="stat-icon charged-parking">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">${stats.charged_parking_shopping.toLocaleString()}</div>
+                    <div class="stat-description">Shopping bills not eligible for parking waiver</div>
+                    <div class="stat-percentage negative">
+                        <i class="fas fa-percentage"></i>
+                        ${stats.charged_parking_percentage}% of shopping bills
+                    </div>
+                </div>
+
+                <div class="stat-card no-vehicles">
+                    <div class="stat-header">
+                        <div class="stat-title">Shopping Revenue</div>
+                        <div class="stat-icon no-vehicles">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">₹${stats.total_shopping_revenue.toLocaleString()}</div>
+                    <div class="stat-description">Total shopping revenue</div>
+                    <div class="stat-percentage positive">
+                        <i class="fas fa-calculator"></i>
+                        ₹${stats.avg_shopping_amount} average bill
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayParkingStats(stats) {
+            const statsGrid = document.getElementById('parkingStatsGrid');
+            statsGrid.innerHTML = `
+                <div class="stat-card charged-parking">
+                    <div class="stat-header">
+                        <div class="stat-title">Direct Parking Bills</div>
+                        <div class="stat-icon charged-parking">
+                            <i class="fas fa-parking"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">${stats.direct_parking_bills.toLocaleString()}</div>
+                    <div class="stat-description">₹50 parking fee payments</div>
+                    <div class="stat-percentage positive">
+                        <i class="fas fa-rupee-sign"></i>
+                        ₹${stats.parking_revenue.toLocaleString()} revenue
+                    </div>
+                </div>
+                <div class="stat-card paid-parking-amount">
+                    <div class="stat-header">
+                        <div class="stat-title">Total Paid Parking Amount</div>
+                        <div class="stat-icon paid-parking-amount">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">₹${stats.parking_revenue.toLocaleString()}</div>
+                    <div class="stat-description">Total amount collected from parking fees</div>
+                </div>
+                <div class="stat-card parking-offer-availed">
+                    <div class="stat-header">
+                        <div class="stat-title">Parking Offer Availed</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">${stats.parking_offer_availed.toLocaleString()}</div>
+                    <div class="stat-description">Receipts where parking offer was availed</div>
+                </div>
+                <div class="stat-card parking-offer-not-availed">
+                    <div class="stat-header">
+                        <div class="stat-title">Parking Offer Not Availed</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-ban"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">${stats.parking_offer_not_availed.toLocaleString()}</div>
+                    <div class="stat-description">Receipts where parking offer was not availed</div>
+                </div>
+            `;
+        }
+
+        function displayErrorStats(gridId = 'overviewStatsGrid') {
+            const statsGrid = document.getElementById(gridId);
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Error Loading Stats</div>
+                        <div class="stat-icon" style="background: var(--gradient-danger);">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">--</div>
+                    <div class="stat-description">Failed to load dashboard statistics</div>
+                </div>
+            `;
+        }
+
+        // Enhanced JavaScript with modern features
+        class ReceiptManager {
+            constructor() {
+                this.searchInput = document.getElementById('searchInput');
+                this.allReceiptsTable = document.getElementById('receiptsTable');
+                this.shoppingTable = document.getElementById('shoppingTable');
+                this.parkingTable = document.getElementById('parkingTable');
+                this.pagination = document.getElementById('pagination');
+                this.paginationInfo = document.getElementById('paginationInfo');
+                this.paginationContainer = document.getElementById('paginationContainer');
+                this.rowsPerPage = 10;
+                this.currentPage = 1;
+                this.filteredRows = [];
+                this.allRows = [];
+                this.activeTable = this.allReceiptsTable; // Default active table
+                
+                // Track active tab to know which table to filter
+                this.activeTabId = 'all-tab';
+                
+                this.init();
+            }
+            
+            init() {
+                // Get rows from the currently active table
+                this.updateActiveTable();
+                
+                this.setupSearch();
+                this.setupPagination();
+                this.updateDisplay();
+                
+                // Add loading animation
+                this.hideLoading();
+                
+                // Add tab change listener
+                this.setupTabChangeListener();
+            }
+            
+            setupTabChangeListener() {
+                // Listen for tab changes to update the active table
+                const tabs = document.querySelectorAll('.receipt-tab');
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        this.activeTabId = tab.id;
+                        this.updateActiveTable();
+                        this.setupPagination();
+                        this.updateDisplay();
+                    });
+                });
+            }
+            
+            updateActiveTable() {
+                // Set the active table based on the current tab
+                if (this.activeTabId === 'all-tab') {
+                    this.activeTable = this.allReceiptsTable;
+                    console.log('Switched to All Receipts table');
+                } else if (this.activeTabId === 'shopping-tab') {
+                    this.activeTable = this.shoppingTable;
+                    console.log('Switched to Shopping Bills table');
+                } else if (this.activeTabId === 'parking-tab') {
+                    this.activeTable = this.parkingTable;
+                    console.log('Switched to Parking Tickets table');
+                }
+                
+                // Update row collections
+                this.allRows = Array.from(this.activeTable.querySelectorAll('tbody tr'));
+                this.filteredRows = [...this.allRows];
+            }
+            
+            setupSearch() {
+                let searchTimeout;
+                
+                this.searchInput.addEventListener('input', (e) => {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        this.performSearch(e.target.value);
+                    }, 300);
+                });
+                
+                // Add search suggestions
+                this.searchInput.addEventListener('focus', () => {
+                    this.searchInput.style.borderColor = 'var(--primary)';
+                });
+                
+                this.searchInput.addEventListener('blur', () => {
+                    this.searchInput.style.borderColor = 'var(--gray-200)';
+                });
+            }
+            
+            performSearch(searchTerm) {
+                // Make sure we're using the correct table based on the active tab
+                this.updateActiveTable();
+                
+                if (!searchTerm.trim()) {
+                    this.filteredRows = [...this.allRows];
+                } else {
+                    const term = searchTerm.toLowerCase();
+                    this.filteredRows = this.allRows.filter(row => {
+                        const cells = row.querySelectorAll('td');
+                        return Array.from(cells).some(cell => 
+                            cell.textContent.toLowerCase().includes(term)
+                        );
+                    });
+                }
+                
+                this.currentPage = 1;
+                this.updateDisplay();
+                this.setupPagination();
+            }
+            
+            setupPagination() {
+                const totalPages = Math.ceil(this.filteredRows.length / this.rowsPerPage);
+                
+                if (totalPages <= 1) {
+                    this.paginationContainer.style.display = 'none';
+                    return;
+                }
+                
+                this.paginationContainer.style.display = 'flex';
+                this.pagination.innerHTML = '';
+                
+                // Previous button
+                this.createPaginationButton('‹', this.currentPage - 1, this.currentPage === 1);
+                
+                // Page numbers
+                const startPage = Math.max(1, this.currentPage - 2);
+                const endPage = Math.min(totalPages, this.currentPage + 2);
+                
+                if (startPage > 1) {
+                    this.createPaginationButton('1', 1);
+                    if (startPage > 2) {
+                        this.createPaginationButton('...', null, true);
+                    }
+                }
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    this.createPaginationButton(i.toString(), i, false, i === this.currentPage);
+                }
+                
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        this.createPaginationButton('...', null, true);
+                    }
+                    this.createPaginationButton(totalPages.toString(), totalPages);
+                }
+                
+                // Next button
+                this.createPaginationButton('›', this.currentPage + 1, this.currentPage === totalPages);
+                
+                this.updatePaginationInfo();
+            }
+            
+            createPaginationButton(text, page, disabled = false, active = false) {
+                const button = document.createElement('button');
+                button.textContent = text;
+                button.disabled = disabled;
+                
+                if (active) {
+                    button.classList.add('active');
+                }
+                
+                if (!disabled && page !== null) {
+                    button.addEventListener('click', () => {
+                        this.currentPage = page;
+                        this.updateDisplay();
+                        this.setupPagination();
+                    });
+                }
+                
+                this.pagination.appendChild(button);
+            }
+            
+            updateDisplay() {
+                // Hide all rows first
+                this.allRows.forEach(row => {
+                    row.style.display = 'none';
+                });
+                
+                // Show filtered and paginated rows
+                const startIndex = (this.currentPage - 1) * this.rowsPerPage;
+                const endIndex = startIndex + this.rowsPerPage;
+                const rowsToShow = this.filteredRows.slice(startIndex, endIndex);
+                
+                rowsToShow.forEach(row => {
+                    row.style.display = '';
+                });
+                
+                // Add stagger animation
+                rowsToShow.forEach((row, index) => {
+                    row.style.animationDelay = `${index * 0.05}s`;
+                    row.style.animation = 'none';
+                    setTimeout(() => {
+                        row.style.animation = 'slideUp 0.3s ease forwards';
+                    }, 10);
+                });
+            }
+            
+            updatePaginationInfo() {
+                const startItem = (this.currentPage - 1) * this.rowsPerPage + 1;
+                const endItem = Math.min(this.currentPage * this.rowsPerPage, this.filteredRows.length);
+                const totalItems = this.filteredRows.length;
+                
+                this.paginationInfo.textContent = 
+                    `Showing ${startItem}-${endItem} of ${totalItems} results`;
+            }
+            
+            showLoading() {
+                const tbody = this.activeTable.querySelector('tbody');
+                const colSpan = this.activeTabId === 'all-tab' ? 11 : (this.activeTabId === 'shopping-tab' ? 8 : 7);
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="${colSpan}">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            hideLoading() {
+                // Remove loading state if present
+                const loadingRow = this.activeTable.querySelector('.loading');
+                if (loadingRow) {
+                    loadingRow.closest('tr').remove();
+                }
+            }
+        }
+        
+        // Enhanced table interactions
+        function enhanceTable() {
+            // Apply enhancements to all three tables
+            const tables = [
+                document.getElementById('receiptsTable'),
+                document.getElementById('shoppingTable'),
+                document.getElementById('parkingTable')
+            ];
+            
+            tables.forEach(table => {
+                const rows = table.querySelectorAll('tbody tr');
+                
+                rows.forEach(row => {
+                    // Add click effect
+                    row.addEventListener('click', function() {
+                        // Add selection animation
+                        this.style.transform = 'scale(0.98)';
+                        setTimeout(() => {
+                            this.style.transform = 'scale(1.001)';
+                        }, 100);
+                    });
+                    
+                    // Add hover sound effect (optional)
+                    row.addEventListener('mouseenter', function() {
+                        this.style.boxShadow = '0 8px 25px rgba(99, 102, 241, 0.15)';
+                    });
+                    
+                    row.addEventListener('mouseleave', function() {
+                        this.style.boxShadow = 'none';
+                    });
+                });
+            });
+        }
+        
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add initial loading state to all tables
+            const tables = {
+                '#receiptsTable': 11,
+                '#shoppingTable': 8, 
+                '#parkingTable': 7
+            };
+            
+            Object.entries(tables).forEach(([tableSelector, colSpan]) => {
+                const tbody = document.querySelector(`${tableSelector} tbody`);
+                if (tbody && tbody.children.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="${colSpan}">
+                                <div class="loading">
+                                    <div class="spinner"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            });
+            
+            // Initialize receipt manager
+            setTimeout(() => {
+                new ReceiptManager();
+                enhanceTable();
+            }, 100);
+            
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();
+                    document.getElementById('searchInput').focus();
+                }
+                
+                if (e.key === 'Escape') {
+                    document.getElementById('searchInput').blur();
+                }
+            });
+        });
+        
+        // Add smooth scrolling for better UX
+        function smoothScrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        // Add notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                background: var(--primary);
+                color: white;
+                border-radius: 12px;
+                box-shadow: var(--shadow-lg);
+                z-index: 1000;
+                opacity: 0;
+                transform: translateX(100%);
+                transition: all 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+          document.getElementById('clean-db-btn').addEventListener('click', function() {
+            if (!confirm('Are you sure you want to clean (delete all) receipts data? This cannot be undone!')) return;
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cleaning...';
+            fetch('/clean_receipts_db', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Receipts database cleaned successfully!');
+                        // Refresh dashboard stats after cleaning
+                        loadDashboardStats();
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(() => alert('Error cleaning database.'))
+                .finally(() => {
+                    this.disabled = false;
+                    this.innerHTML = '<i class="fas fa-trash"></i> Clean Database';
+                });
+        });
+    </script>
+
+    <!-- Tab Switching JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.receipt-tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            // Map tab IDs to content IDs
+            const tabContentMap = {
+                'all-tab': 'all-receipts-content',
+                'shopping-tab': 'shopping-receipts-content',
+                'parking-tab': 'parking-receipts-content'
+            };
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    console.log(`Tab clicked: ${this.id}`);
+                    
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contents.forEach(content => content.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Show the corresponding content
+                    const contentId = tabContentMap[this.id];
+                    const contentElement = document.getElementById(contentId);
+                    contentElement.classList.add('active');
+                    console.log(`Activated tab content: ${contentId}`);
+                    
+                    // Make sure the Receipt Manager updates its active table
+                    if (window.receiptManager) {
+                        window.receiptManager.activeTabId = this.id;
+                        window.receiptManager.updateActiveTable();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
